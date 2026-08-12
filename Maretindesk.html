@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Desk — Shray Projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#143374; --navy-deep:#0D2354; --gold:#BB9251; --gold-soft:#E4CFA6;
+    --bg:#F7F5F1; --surface:#FFFFFF; --ink:#1E2430; --muted:#6B7280;
+    --success:#2F8F5B; --success-bg:#E8F4EC; --warning:#C97A2B; --warning-bg:#FBF0E4;
+    --danger:#B84C4C; --danger-bg:#FBEAEA; --border:#E4E0D8;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;}
+  h1,h2,h3,.display{font-family:'Cormorant Garamond',serif;}
+  .app{max-width:1180px;margin:0 auto;padding:0 20px 60px;}
+
+  /* Header */
+  header{background:var(--navy);color:#fff;padding:22px 20px;margin-bottom:0;}
+  header .app{padding:0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;max-width:1180px;margin:0 auto;padding-left:20px;padding-right:20px;}
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand .mark{width:34px;height:34px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--gold);font-size:18px;}
+  .brand h1{margin:0;font-size:26px;font-weight:600;letter-spacing:.3px;}
+  .brand .sub{color:var(--gold-soft);font-size:12.5px;letter-spacing:.6px;text-transform:uppercase;}
+  .who{display:flex;align-items:center;gap:10px;}
+  .who select{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:8px 12px;font-family:'Inter';font-size:14px;}
+  .who select option{color:#000;}
+
+  /* Nav */
+  nav{display:flex;gap:4px;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:5;}
+  nav .app{display:flex;gap:4px;padding:0 20px;max-width:1180px;margin:0 auto;}
+  nav button{background:none;border:none;padding:16px 6px;margin-right:22px;font-family:'Inter';font-size:14.5px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;}
+  nav button.active{color:var(--navy);border-bottom-color:var(--gold);}
+
+  main{padding-top:28px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .grid{display:grid;gap:16px;}
+  .grid.cols-3{grid-template-columns:repeat(3,1fr);}
+  @media (max-width:860px){.grid.cols-3{grid-template-columns:1fr;}}
+
+  section h2{font-size:22px;font-weight:600;margin:0 0 4px;}
+  .section-sub{color:var(--muted);font-size:13.5px;margin:0 0 18px;}
+
+  /* Task form */
+  .task-form{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;}
+  .task-form input[type=text]{flex:1;min-width:220px;}
+  input,select,textarea{font-family:'Inter';font-size:14px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:#FCFBF9;color:var(--ink);}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--gold-soft);outline-offset:1px;border-color:var(--gold);}
+  button.btn{font-family:'Inter';font-weight:600;font-size:14px;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;background:var(--navy);color:#fff;}
+  button.btn:hover{background:var(--navy-deep);}
+  button.btn.ghost{background:none;border:1px solid var(--border);color:var(--ink);}
+  button.btn.small{padding:6px 12px;font-size:12.5px;}
+
+  /* Task list */
+  .task-row{display:flex;align-items:center;gap:14px;padding:14px 4px;border-bottom:1px solid var(--border);}
+  .task-row:last-child{border-bottom:none;}
+  .task-main{flex:1;min-width:0;}
+  .task-title{font-weight:600;font-size:14.5px;}
+  .task-title.done{text-decoration:line-through;color:var(--muted);}
+  .tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;padding:2px 8px;border-radius:20px;background:var(--gold-soft);color:#6B4E1F;margin-top:4px;}
+  .task-controls{display:flex;align-items:center;gap:10px;}
+  input[type=range]{width:110px;accent-color:var(--navy);}
+  .pct-label{font-size:13px;font-weight:600;width:38px;text-align:right;}
+  .status-badge{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:20px;}
+  .status-completed{background:var(--success-bg);color:var(--success);}
+  .status-in_progress{background:var(--warning-bg);color:var(--warning);}
+  .status-pending{background:#EEE;color:var(--muted);}
+  .empty{color:var(--muted);font-size:14px;padding:20px 4px;}
+
+  /* Dashboard cards */
+  .emp-card h3{margin:0 0 2px;font-size:19px;}
+  .emp-role{color:var(--muted);font-size:12.5px;margin-bottom:16px;}
+  .ring-row{display:flex;gap:22px;margin-bottom:14px;}
+  .ring{position:relative;width:84px;height:84px;}
+  .ring svg{transform:rotate(-90deg);}
+  .ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ring-label b{font-size:16px;line-height:1;}
+  .ring-label span{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
+  .ring-caption{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;}
+  .stat-line{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-top:1px solid var(--border);margin-top:8px;}
+  .stat-line b{font-weight:600;}
+  .flag{background:var(--danger-bg);color:var(--danger);font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;margin-top:10px;}
+  .trend{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:12px;margin-left:6px;}
+  .trend.up{background:var(--success-bg);color:var(--success);}
+  .trend.down{background:var(--danger-bg);color:var(--danger);}
+  .trend.flat{background:#EEE;color:var(--muted);}
+  .kra-score-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--border);font-size:12.5px;}
+  .kra-name{font-weight:600;flex:1;padding-right:8px;}
+  .kra-kpi{color:var(--muted);font-size:11px;display:block;margin-top:1px;}
+  .kra-wt{color:var(--muted);font-size:11px;width:38px;text-align:right;}
+  .kra-bar-wrap{width:70px;height:6px;background:#EEE;border-radius:4px;overflow:hidden;margin:0 8px;}
+  .kra-bar{height:100%;border-radius:4px;}
+  .overall-score{display:flex;align-items:center;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
+  .overall-score .num{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:var(--navy);}
+  .overall-score .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+  .cat-bar-row{display:flex;align-items:center;gap:8px;font-size:11.5px;margin:5px 0;}
+  .cat-bar-row .cat-name{width:52px;color:var(--muted);text-transform:capitalize;}
+  .cat-bar-track{flex:1;height:7px;background:#EEE;border-radius:4px;overflow:hidden;}
+  .cat-bar-fill{height:100%;background:var(--gold);border-radius:4px;}
+  .cat-bar-count{width:18px;text-align:right;font-weight:600;}
+  .subblock{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
+  .subblock-title{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:8px;}
+  .quality-avg{display:flex;align-items:center;gap:6px;font-size:13px;}
+  .quality-avg .stars{color:var(--gold);letter-spacing:1px;}
+  .kra-admin-block{margin-bottom:26px;}
+  .kra-admin-block h4{margin:0 0 2px;font-size:15.5px;}
+  .wt-total{font-size:12px;color:var(--muted);margin-bottom:8px;}
+  .wt-total.bad{color:var(--danger);font-weight:600;}
+
+  /* Admin */
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th{text-align:left;color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;padding:8px 6px;border-bottom:1px solid var(--border);}
+  td{padding:9px 6px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  td input, td select{padding:6px 8px;font-size:13px;}
+  .subhead{font-size:15px;font-weight:600;margin:26px 0 10px;}
+  .report-box{background:#FCFBF9;border:1px dashed var(--border);border-radius:10px;padding:16px;font-size:13.5px;white-space:pre-wrap;font-family:'Inter';line-height:1.6;margin-top:12px;}
+  .note{font-size:12.5px;color:var(--muted);margin-top:8px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="app">
+    <div class="brand">
+      <div class="mark">S</div>
+      <div>
+        <h1>Marketing Desk</h1>
+        <div class="sub">Shray Projects · Task &amp; Performance Tracker</div>
+      </div>
+    </div>
+    <div class="who">
+      <label style="font-size:12.5px;color:var(--gold-soft);">Viewing as</label>
+      <select id="whoSelect"></select>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="app">
+    <button data-tab="tasks" class="active">My Tasks</button>
+    <button data-tab="dashboard">Team Dashboard</button>
+    <button data-tab="admin" id="adminTabBtn" style="display:none;">Admin</button>
+  </div>
+</nav>
+
+<div class="app">
+<main>
+
+  <!-- TASKS TAB -->
+  <section id="tab-tasks">
+    <h2>Today's Tasks</h2>
+    <p class="section-sub" id="todayDate"></p>
+
+    <form class="task-form" id="taskForm">
+      <input type="text" id="newTaskTitle" placeholder="Add a task for today…" required>
+      <select id="newTaskCategory">
+        <option value="content">Content</option>
+        <option value="social">Social</option>
+        <option value="ads">Ads</option>
+        <option value="seo">SEO</option>
+        <option value="client">Client</option>
+        <option value="design">Design/Edit</option>
+        <option value="strategy">Strategy</option>
+        <option value="other">Other</option>
+      </select>
+      <input type="url" id="newTaskLink" placeholder="Link (optional)" style="min-width:160px;">
+      <button class="btn" type="submit">Add Task</button>
+    </form>
+
+    <div class="card" id="taskListCard">
+      <div id="taskList"></div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD TAB -->
+  <section id="tab-dashboard" style="display:none;">
+    <h2>Team Performance</h2>
+    <p class="section-sub">Task targets, weighted KRA scorecards, category mix, and quality — updated live.</p>
+    <div class="grid cols-3" id="dashboardGrid"></div>
+  </section>
+
+  <!-- ADMIN TAB -->
+  <section id="tab-admin" style="display:none;">
+    <h2>Admin</h2>
+    <p class="section-sub">Manage team members, KRA targets, and generate the weekly assessment.</p>
+
+    <div class="card">
+      <div class="subhead" style="margin-top:0;">Team Members &amp; Targets</div>
+      <table>
+        <thead><tr><th>Name</th><th>Role</th><th>Weekly Target</th><th>Monthly Target</th><th>Active</th><th></th></tr></thead>
+        <tbody id="employeeTable"></tbody>
+      </table>
+      <form id="addEmpForm" style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+        <input type="text" id="newEmpName" placeholder="Name" required style="flex:1;min-width:120px;">
+        <input type="text" id="newEmpRole" placeholder="Role">
+        <input type="number" id="newEmpWeekly" placeholder="Weekly target" value="5" style="width:120px;">
+        <input type="number" id="newEmpMonthly" placeholder="Monthly target" value="20" style="width:130px;">
+        <button class="btn ghost" type="submit">+ Add Member</button>
+      </form>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="subhead" style="margin-top:0;">KRA Weightage &amp; Monthly Scores</div>
+      <p class="note" style="margin-top:0;">These are the KRA tables finalized earlier — weightage should sum to 100% per person. Set each KRA's monthly score (0–100) as the month closes.</p>
+      <div id="kraAdmin"></div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="subhead" style="margin-top:0;">Rate &amp; Review Recent Tasks</div>
+      <table>
+        <thead><tr><th>Employee</th><th>Task</th><th>Date</th><th>Status</th><th>%</th><th>Link</th><th>Quality</th><th>Comment</th></tr></thead>
+        <tbody id="reviewTable"></tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="subhead" style="margin-top:0;">Weekly Assessment Report</div>
+      <p class="note" style="margin-top:0;">Generates this week's summary for anyone below target. This is the same content the automated Friday email (via n8n) will send — use "Copy" to send it manually anytime in the meantime.</p>
+      <button class="btn" id="genReportBtn">Generate This Week's Report</button>
+      <div class="report-box" id="reportBox" style="display:none;"></div>
+      <button class="btn ghost small" id="copyReportBtn" style="display:none;margin-top:10px;">Copy to clipboard</button>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+/* ====================== CONFIG ======================
+   Replace these two values once your Supabase project is ready:
+   (Settings → API in your Supabase dashboard)
+======================================================= */
+const SUPABASE_URL = "https://omdpdwcnpgqrsojgusyg.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_E9aV44LK-qy2xryz2fNUnA_1nttkzpz";
+
+const DEMO_MODE = SUPABASE_URL.startsWith("YOUR_");
+
+/* Lightweight PostgREST client — avoids loading an external SDK script,
+   which is blocked inside sandboxed previews. Talks to Supabase's REST API directly. */
+const REST_BASE = SUPABASE_URL + "/rest/v1/";
+const pgHeaders = {
+  "apikey": SUPABASE_ANON_KEY,
+  "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+  "Content-Type": "application/json"
+};
+async function pgSelect(table, order){
+  const url = REST_BASE + table + "?select=*" + (order ? "&order="+order : "");
+  const res = await fetch(url, { headers: pgHeaders });
+  if (!res.ok){ console.error(await res.text()); return []; }
+  return res.json();
+}
+async function pgInsert(table, body){
+  const res = await fetch(REST_BASE + table, {
+    method: "POST",
+    headers: { ...pgHeaders, "Prefer": "return=representation" },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok){ console.error(await res.text()); return null; }
+  return res.json();
+}
+async function pgUpdate(table, id, fields){
+  const res = await fetch(REST_BASE + table + "?id=eq." + id, {
+    method: "PATCH",
+    headers: { ...pgHeaders, "Prefer": "return=representation" },
+    body: JSON.stringify(fields)
+  });
+  if (!res.ok){ console.error(await res.text()); return null; }
+  return res.json();
+}
+async function pgDelete(table, id){
+  const res = await fetch(REST_BASE + table + "?id=eq." + id, { method: "DELETE", headers: pgHeaders });
+  if (!res.ok){ console.error(await res.text()); return false; }
+  return true;
+}
+
+/* ====================== In-memory demo data (used until Supabase is connected) ====================== */
+let demoEmployees = [
+  { id:"e1", name:"Bhavyaa", role:"Content Strategist", is_admin:false, weekly_target:5, monthly_target:20, active:true },
+  { id:"e2", name:"Nidhi", role:"Digital Marketing Specialist", is_admin:false, weekly_target:5, monthly_target:20, active:true },
+  { id:"e3", name:"Yash", role:"Editor (Graphic & Video)", is_admin:false, weekly_target:5, monthly_target:20, active:true },
+  { id:"e4", name:"Tapan", role:"Admin", is_admin:true, weekly_target:5, monthly_target:20, active:true },
+];
+let demoTasks = [];
+let demoKras = [
+  { id:"k1", employee_id:"e1", name:"Content Calendar & Planning", kpi:"Monthly calendar delivered on time; % of planned content shipped across all formats", weightage:15, monthly_score:null },
+  { id:"k2", employee_id:"e1", name:"Blog & Quora Content", kpi:"Posts published, SEO/quality adherence, engagement (2 Quora answers/day cadence)", weightage:15, monthly_score:null },
+  { id:"k3", employee_id:"e1", name:"YouTube Strategy & Scripting", kpi:"Content plan delivered, script quality, video output vs. plan", weightage:15, monthly_score:null },
+  { id:"k4", employee_id:"e1", name:"Video Shooting (raw content)", kpi:"Shoots completed on schedule, footage quality/usability", weightage:10, monthly_score:null },
+  { id:"k5", employee_id:"e1", name:"Email & WhatsApp Content Writing", kpi:"Copy delivered on time, open/response rates where applicable", weightage:15, monthly_score:null },
+  { id:"k6", employee_id:"e1", name:"Content Quality & Brand Voice", kpi:"Revision rounds needed, editorial consistency", weightage:15, monthly_score:null },
+  { id:"k7", employee_id:"e1", name:"Cross-team Coordination", kpi:"Turnaround coordinating with design/video/marketing", weightage:10, monthly_score:null },
+  { id:"k8", employee_id:"e1", name:"Reporting", kpi:"Monthly content performance report submitted on time", weightage:5, monthly_score:null },
+
+  { id:"k9", employee_id:"e2", name:"Campaign Execution (Paid)", kpi:"Campaigns launched on schedule, on brief", weightage:15, monthly_score:null },
+  { id:"k10", employee_id:"e2", name:"Lead Generation", kpi:"Number/quality of leads (MQLs) generated monthly", weightage:20, monthly_score:null },
+  { id:"k11", employee_id:"e2", name:"Ad Spend Efficiency", kpi:"CPL, CTR, ROAS vs. target", weightage:15, monthly_score:null },
+  { id:"k12", employee_id:"e2", name:"WhatsApp & Email Marketing", kpi:"Send volume, open/response rates, list health", weightage:15, monthly_score:null },
+  { id:"k13", employee_id:"e2", name:"Website Improvement", kpi:"Site updates/fixes shipped, page speed, conversion rate", weightage:10, monthly_score:null },
+  { id:"k14", employee_id:"e2", name:"SEO", kpi:"Keyword rankings, organic traffic growth, on-page fixes completed", weightage:15, monthly_score:null },
+  { id:"k15", employee_id:"e2", name:"Reporting & Optimization", kpi:"Monthly performance report with actionable insights", weightage:10, monthly_score:null },
+
+  { id:"k16", employee_id:"e3", name:"Video/Reel Production Volume", kpi:"Edits delivered vs. planned monthly output (2 reels/day cadence)", weightage:20, monthly_score:null },
+  { id:"k17", employee_id:"e3", name:"Turnaround Time", kpi:"Avg. time from raw footage/brief to final delivery", weightage:15, monthly_score:null },
+  { id:"k18", employee_id:"e3", name:"Creative & Brand Quality", kpi:"Revision rounds needed; adherence to brand guidelines", weightage:15, monthly_score:null },
+  { id:"k19", employee_id:"e3", name:"Graphic Design Output", kpi:"Static creatives (social, ads, collateral) delivered on time", weightage:15, monthly_score:null },
+  { id:"k20", employee_id:"e3", name:"Innovation", kpi:"New formats/styles/tools tried monthly; ideas pitched and executed", weightage:15, monthly_score:null },
+  { id:"k21", employee_id:"e3", name:"Content Performance Contribution", kpi:"Engagement/view metrics on edited content", weightage:10, monthly_score:null },
+  { id:"k22", employee_id:"e3", name:"Asset Organization & Handover", kpi:"Raw files, templates, and finals organized and accessible", weightage:10, monthly_score:null },
+];
+let idCounter = 1;
+
+let currentUser = null;
+let employees = [];
+let tasks = [];
+let kras = [];
+let activeTab = "tasks";
+
+const todayStr = () => new Date().toISOString().slice(0,10);
+const startOfWeek = () => { const d=new Date(); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); d.setHours(0,0,0,0); return d; };
+const startOfMonth = () => { const d=new Date(); d.setDate(1); d.setHours(0,0,0,0); return d; };
+
+/* ====================== Data layer ====================== */
+async function loadEmployees(){
+  if (DEMO_MODE){ employees = demoEmployees; return; }
+  employees = await pgSelect('employees', 'created_at.asc');
+}
+async function loadTasks(){
+  if (DEMO_MODE){ tasks = demoTasks; return; }
+  tasks = await pgSelect('tasks', 'created_at.desc');
+}
+async function addTask(title, category, link){
+  if (DEMO_MODE){
+    demoTasks.unshift({ id:'t'+(idCounter++), employee_id:currentUser.id, title, category, link: link||null, admin_comment:null, task_date:todayStr(), status:'pending', completion_pct:0, quality_rating:null, created_at:new Date().toISOString() });
+    await refreshAll(); return;
+  }
+  await pgInsert('tasks', { employee_id: currentUser.id, title, category, task_date: todayStr(), link: link||null });
+  await refreshAll();
+}
+async function updateTask(id, fields){
+  if (DEMO_MODE){
+    const t = demoTasks.find(t=>t.id===id); Object.assign(t, fields); await refreshAll(); return;
+  }
+  await pgUpdate('tasks', id, fields);
+  await refreshAll();
+}
+async function addEmployee(name, role, weekly, monthly){
+  if (DEMO_MODE){
+    demoEmployees.push({ id:'e'+(idCounter++), name, role, is_admin:false, weekly_target:weekly, monthly_target:monthly, active:true });
+    await refreshAll(); return;
+  }
+  await pgInsert('employees', { name, role, weekly_target:weekly, monthly_target:monthly });
+  await refreshAll();
+}
+async function updateEmployee(id, fields){
+  if (DEMO_MODE){
+    const e = demoEmployees.find(e=>e.id===id); Object.assign(e, fields); await refreshAll(); return;
+  }
+  await pgUpdate('employees', id, fields);
+  await refreshAll();
+}
+
+async function loadKras(){
+  if (DEMO_MODE){ kras = demoKras; return; }
+  kras = await pgSelect('kras', 'created_at.asc');
+}
+async function updateKra(id, fields){
+  if (DEMO_MODE){
+    const k = demoKras.find(k=>k.id===id); Object.assign(k, fields); await refreshAll(); return;
+  }
+  await pgUpdate('kras', id, fields);
+  await refreshAll();
+}
+async function addKra(employeeId, name, kpi, weightage){
+  if (DEMO_MODE){
+    demoKras.push({ id:'k'+(idCounter++), employee_id:employeeId, name, kpi, weightage, monthly_score:null });
+    await refreshAll(); return;
+  }
+  await pgInsert('kras', { employee_id: employeeId, name, kpi, weightage });
+  await refreshAll();
+}
+async function deleteKra(id){
+  if (DEMO_MODE){
+    demoKras = demoKras.filter(k=>k.id!==id);
+    await refreshAll(); return;
+  }
+  await pgDelete('kras', id);
+  await refreshAll();
+}
+
+async function refreshAll(){
+  await loadEmployees();
+  await loadTasks();
+  await loadKras();
+  render();
+}
+
+/* ====================== Render: header / nav ====================== */
+function renderWhoSelect(){
+  const sel = document.getElementById('whoSelect');
+  sel.innerHTML = employees.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
+  if (!currentUser || !employees.find(e=>e.id===currentUser.id)){
+    currentUser = employees[0] || null;
+  }
+  sel.value = currentUser ? currentUser.id : '';
+  document.getElementById('adminTabBtn').style.display = currentUser && currentUser.is_admin ? 'inline-block' : 'none';
+  if (activeTab === 'admin' && (!currentUser || !currentUser.is_admin)) switchTab('tasks');
+}
+
+document.getElementById('whoSelect').addEventListener('change', (e)=>{
+  currentUser = employees.find(emp => emp.id === e.target.value);
+  render();
+});
+
+document.querySelectorAll('nav button[data-tab]').forEach(btn=>{
+  btn.addEventListener('click', ()=> switchTab(btn.dataset.tab));
+});
+function switchTab(tab){
+  activeTab = tab;
+  document.querySelectorAll('nav button[data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
+  ['tasks','dashboard','admin'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display = (t===tab) ? 'block' : 'none';
+  });
+}
+
+/* ====================== Render: My Tasks ====================== */
+function renderTasks(){
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  const myTasks = tasks.filter(t => t.employee_id === (currentUser && currentUser.id) && t.task_date === todayStr());
+  const list = document.getElementById('taskList');
+  if (!myTasks.length){ list.innerHTML = '<div class="empty">No tasks added yet today — add your first one above.</div>'; return; }
+  list.innerHTML = myTasks.map(t => `
+    <div class="task-row">
+      <div class="task-main">
+        <div class="task-title ${t.status==='completed'?'done':''}">${escapeHtml(t.title)}</div>
+        <span class="tag">${t.category}</span>
+        ${t.link ? `<a href="${escapeAttr(t.link)}" target="_blank" rel="noopener" style="margin-left:8px;font-size:12px;color:var(--navy);">🔗 View</a>` : ''}
+        ${t.admin_comment ? `<div style="margin-top:6px;font-size:12.5px;color:var(--muted);background:#FCFBF9;border-left:2px solid var(--gold);padding:6px 10px;border-radius:4px;">Admin note: ${escapeHtml(t.admin_comment)}</div>` : ''}
+      </div>
+      <div class="task-controls">
+        <input type="range" min="0" max="100" step="10" value="${t.completion_pct}" data-id="${t.id}" class="pctSlider">
+        <span class="pct-label">${t.completion_pct}%</span>
+        <span class="status-badge status-${t.status}">${t.status.replace('_',' ')}</span>
+      </div>
+    </div>
+  `).join('');
+  document.querySelectorAll('.pctSlider').forEach(sl=>{
+    sl.addEventListener('change', async (e)=>{
+      const pct = parseInt(e.target.value);
+      const status = pct===100 ? 'completed' : (pct>0 ? 'in_progress' : 'pending');
+      await updateTask(e.target.dataset.id, { completion_pct: pct, status });
+    });
+  });
+}
+
+document.getElementById('taskForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const title = document.getElementById('newTaskTitle').value.trim();
+  const category = document.getElementById('newTaskCategory').value;
+  const link = document.getElementById('newTaskLink').value.trim();
+  if (!title || !currentUser) return;
+  await addTask(title, category, link);
+  document.getElementById('newTaskTitle').value = '';
+  document.getElementById('newTaskLink').value = '';
+});
+
+/* ====================== Render: Dashboard ====================== */
+function statsFor(empId, sinceDate){
+  const relevant = tasks.filter(t => t.employee_id === empId && new Date(t.task_date) >= sinceDate);
+  const completed = relevant.filter(t => t.status === 'completed').length;
+  return { total: relevant.length, completed };
+}
+function statsForRange(empId, start, end){
+  const relevant = tasks.filter(t => t.employee_id === empId && new Date(t.task_date) >= start && new Date(t.task_date) < end);
+  const completed = relevant.filter(t => t.status === 'completed').length;
+  return { total: relevant.length, completed };
+}
+function prevWeekRange(){
+  const thisStart = startOfWeek();
+  const prevStart = new Date(thisStart); prevStart.setDate(prevStart.getDate()-7);
+  return { start: prevStart, end: thisStart };
+}
+function categoryBreakdown(empId, sinceDate){
+  const relevant = tasks.filter(t => t.employee_id === empId && new Date(t.task_date) >= sinceDate && t.status==='completed');
+  const counts = {};
+  relevant.forEach(t => counts[t.category] = (counts[t.category]||0)+1);
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+}
+function qualityAvg(empId, sinceDate){
+  const rated = tasks.filter(t => t.employee_id === empId && new Date(t.task_date) >= sinceDate && t.quality_rating);
+  if (!rated.length) return null;
+  return (rated.reduce((s,t)=>s+t.quality_rating,0)/rated.length);
+}
+function weightedKraScore(empId){
+  const list = kras.filter(k => k.employee_id === empId);
+  const scored = list.filter(k => k.monthly_score !== null && k.monthly_score !== undefined);
+  if (!scored.length) return { score:null, scoredCount:0, total:list.length };
+  const totalWt = scored.reduce((s,k)=>s+k.weightage,0) || 1;
+  const weighted = scored.reduce((s,k)=> s + (k.monthly_score * k.weightage), 0) / totalWt;
+  return { score: Math.round(weighted), scoredCount: scored.length, total: list.length };
+}
+function ringSVG(pct, color, size=84, stroke=8){
+  const r = (size/2)-stroke, c = 2*Math.PI*r, cx=size/2, cy=size/2;
+  const offset = c - (Math.min(pct,100)/100)*c;
+  return `<svg width="${size}" height="${size}"><circle cx="${cx}" cy="${cy}" r="${r}" stroke="#EEE" stroke-width="${stroke}" fill="none"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" stroke="${color}" stroke-width="${stroke}" fill="none" stroke-linecap="round"
+      stroke-dasharray="${c}" stroke-dashoffset="${offset}"/></svg>`;
+}
+function starRow(avg){
+  const full = Math.round(avg);
+  return '★'.repeat(full) + '☆'.repeat(5-full);
+}
+function renderDashboard(){
+  const grid = document.getElementById('dashboardGrid');
+  const weekStart = startOfWeek(), monthStart = startOfMonth();
+  const { start: pStart, end: pEnd } = prevWeekRange();
+
+  grid.innerHTML = employees.filter(e=>e.active).map(emp=>{
+    const wk = statsFor(emp.id, weekStart);
+    const mo = statsFor(emp.id, monthStart);
+    const prevWk = statsForRange(emp.id, pStart, pEnd);
+    const wkPct = emp.weekly_target ? Math.round((wk.completed/emp.weekly_target)*100) : 0;
+    const moPct = emp.monthly_target ? Math.round((mo.completed/emp.monthly_target)*100) : 0;
+    const wkColor = wkPct>=100 ? 'var(--success)' : wkPct>=60 ? 'var(--gold)' : 'var(--danger)';
+    const moColor = moPct>=100 ? 'var(--success)' : moPct>=60 ? 'var(--gold)' : 'var(--danger)';
+
+    const delta = wk.completed - prevWk.completed;
+    const trendClass = delta>0?'up':delta<0?'down':'flat';
+    const trendArrow = delta>0?'▲':delta<0?'▼':'—';
+    const trendHtml = `<span class="trend ${trendClass}">${trendArrow} ${delta===0?'same as':Math.abs(delta)} vs last wk</span>`;
+
+    const cats = categoryBreakdown(emp.id, monthStart);
+    const maxCat = cats.length ? cats[0][1] : 1;
+    const qAvg = qualityAvg(emp.id, monthStart);
+    const kraList = kras.filter(k => k.employee_id === emp.id).sort((a,b)=>b.weightage-a.weightage);
+    const kraTotal = weightedKraScore(emp.id);
+    const kraColor = kraTotal.score===null ? 'var(--muted)' : kraTotal.score>=80 ? 'var(--success)' : kraTotal.score>=60 ? 'var(--gold)' : 'var(--danger)';
+
+    return `
+    <div class="card emp-card">
+      <h3>${emp.name} ${trendHtml}</h3>
+      <div class="emp-role">${emp.role||''}</div>
+      <div class="ring-row">
+        <div>
+          <div class="ring">${ringSVG(wkPct, wkColor)}<div class="ring-label"><b>${wk.completed}/${emp.weekly_target}</b><span>this week</span></div></div>
+        </div>
+        <div>
+          <div class="ring">${ringSVG(moPct, moColor)}<div class="ring-label"><b>${mo.completed}/${emp.monthly_target}</b><span>this month</span></div></div>
+        </div>
+      </div>
+      <div class="stat-line"><span>Weekly completion</span><b>${wkPct}%</b></div>
+      <div class="stat-line"><span>Monthly completion</span><b>${moPct}%</b></div>
+      ${wkPct<70 ? `<div class="flag">Behind on weekly target</div>` : ''}
+
+      ${kraList.length ? `
+      <div class="subblock">
+        <div class="subblock-title">KRA Scorecard (this month)</div>
+        ${kraList.map(k=>`
+          <div class="kra-score-row">
+            <div class="kra-name">${k.name}<span class="kra-kpi">${k.kpi||''}</span></div>
+            <div class="kra-wt">${k.weightage}%</div>
+            <div class="kra-bar-wrap"><div class="kra-bar" style="width:${k.monthly_score||0}%;background:${k.monthly_score>=80?'var(--success)':k.monthly_score>=60?'var(--gold)':k.monthly_score?'var(--danger)':'#DDD'}"></div></div>
+            <div style="width:30px;text-align:right;font-weight:600;">${k.monthly_score!=null?k.monthly_score:'—'}</div>
+          </div>`).join('')}
+        <div class="overall-score">
+          <div class="num" style="color:${kraColor}">${kraTotal.score!==null?kraTotal.score:'—'}</div>
+          <div>
+            <div class="lbl">Weighted KRA Score</div>
+            <div style="font-size:11.5px;color:var(--muted);">${kraTotal.scoredCount}/${kraTotal.total} KRAs scored this month</div>
+          </div>
+        </div>
+      </div>` : ''}
+
+      ${cats.length ? `
+      <div class="subblock">
+        <div class="subblock-title">This Month by Category</div>
+        ${cats.map(([cat,count])=>`
+          <div class="cat-bar-row">
+            <div class="cat-name">${cat}</div>
+            <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${Math.round((count/maxCat)*100)}%"></div></div>
+            <div class="cat-bar-count">${count}</div>
+          </div>`).join('')}
+      </div>` : ''}
+
+      <div class="subblock">
+        <div class="subblock-title">Avg Task Quality (this month)</div>
+        <div class="quality-avg">
+          ${qAvg!==null ? `<span class="stars">${starRow(qAvg)}</span><span>${qAvg.toFixed(1)}/5</span>` : `<span style="color:var(--muted);">No rated tasks yet</span>`}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ====================== Render: Admin ====================== */
+function renderKraAdmin(){
+  const wrap = document.getElementById('kraAdmin');
+  const nonAdmins = employees.filter(e=>!e.is_admin);
+  wrap.innerHTML = nonAdmins.map(emp=>{
+    const list = kras.filter(k=>k.employee_id===emp.id);
+    const totalWt = list.reduce((s,k)=>s+k.weightage,0);
+    return `
+    <div class="kra-admin-block">
+      <h4>${emp.name} <span style="font-weight:400;color:var(--muted);font-size:13px;">— ${emp.role||''}</span></h4>
+      <div class="wt-total ${totalWt!==100?'bad':''}">Total weightage: ${totalWt}%${totalWt!==100?' (should equal 100%)':''}</div>
+      <table>
+        <thead><tr><th>KRA</th><th>KPI / metric</th><th>Weightage</th><th>Monthly Score (0–100)</th><th></th></tr></thead>
+        <tbody>
+          ${list.map(k=>`
+            <tr>
+              <td><input type="text" value="${escapeAttr(k.name)}" style="width:100%;min-width:150px;" data-kra-name="${k.id}"></td>
+              <td><input type="text" value="${escapeAttr(k.kpi||'')}" style="width:100%;min-width:180px;" data-kra-kpi="${k.id}"></td>
+              <td><input type="number" min="0" max="100" value="${k.weightage}" style="width:60px" data-kra-wt="${k.id}"></td>
+              <td><input type="number" min="0" max="100" value="${k.monthly_score!=null?k.monthly_score:''}" placeholder="—" style="width:70px" data-kra-score="${k.id}"></td>
+              <td><button class="btn ghost small" data-kra-del="${k.id}" title="Remove KRA">✕</button></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      <form class="add-kra-form" data-emp="${emp.id}" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+        <input type="text" placeholder="New KRA name" data-f="name" required style="flex:1;min-width:140px;">
+        <input type="text" placeholder="KPI / metric" data-f="kpi" style="flex:1;min-width:160px;">
+        <input type="number" placeholder="Wt %" data-f="weightage" value="10" style="width:70px;">
+        <button class="btn ghost small" type="submit">+ Add KRA</button>
+      </form>
+    </div>`;
+  }).join('');
+
+  wrap.querySelectorAll('.add-kra-form').forEach(f=>{
+    f.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const name = f.querySelector('[data-f=name]').value.trim();
+      const kpi = f.querySelector('[data-f=kpi]').value.trim();
+      const weightage = parseInt(f.querySelector('[data-f=weightage]').value)||0;
+      if (!name) return;
+      await addKra(f.dataset.emp, name, kpi, weightage);
+    });
+  });
+  wrap.querySelectorAll('[data-kra-del]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if (confirm('Remove this KRA?')) await deleteKra(btn.dataset.kraDel);
+    });
+  });
+  wrap.querySelectorAll('[data-kra-name]').forEach(inp=>{
+    inp.addEventListener('change', async (e)=>{
+      await updateKra(e.target.dataset.kraName, { name: e.target.value.trim() });
+    });
+  });
+  wrap.querySelectorAll('[data-kra-kpi]').forEach(inp=>{
+    inp.addEventListener('change', async (e)=>{
+      await updateKra(e.target.dataset.kraKpi, { kpi: e.target.value.trim() });
+    });
+  });
+
+  wrap.querySelectorAll('[data-kra-score]').forEach(inp=>{
+    inp.addEventListener('change', async (e)=>{
+      const val = e.target.value === '' ? null : Math.max(0,Math.min(100,parseInt(e.target.value)));
+      await updateKra(e.target.dataset.kraScore, { monthly_score: val });
+    });
+  });
+  wrap.querySelectorAll('[data-kra-wt]').forEach(inp=>{
+    inp.addEventListener('change', async (e)=>{
+      const val = Math.max(0,Math.min(100,parseInt(e.target.value)||0));
+      await updateKra(e.target.dataset.kraWt, { weightage: val });
+    });
+  });
+}
+
+function renderAdmin(){
+  renderKraAdmin();
+  const tbody = document.getElementById('employeeTable');
+  tbody.innerHTML = employees.map(emp=>`
+    <tr>
+      <td>${emp.name}${emp.is_admin?' <span class="tag" style="margin:0;">admin</span>':''}</td>
+      <td>${emp.role||''}</td>
+      <td><input type="number" value="${emp.weekly_target}" style="width:70px" data-field="weekly_target" data-id="${emp.id}"></td>
+      <td><input type="number" value="${emp.monthly_target}" style="width:70px" data-field="monthly_target" data-id="${emp.id}"></td>
+      <td><input type="checkbox" ${emp.active?'checked':''} data-field="active" data-id="${emp.id}"></td>
+      <td><button class="btn ghost small" data-save="${emp.id}">Save</button></td>
+    </tr>`).join('');
+  tbody.querySelectorAll('[data-save]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id = btn.dataset.save;
+      const row = btn.closest('tr');
+      const weekly = parseInt(row.querySelector('[data-field=weekly_target]').value);
+      const monthly = parseInt(row.querySelector('[data-field=monthly_target]').value);
+      const active = row.querySelector('[data-field=active]').checked;
+      await updateEmployee(id, { weekly_target:weekly, monthly_target:monthly, active });
+    });
+  });
+
+  const reviewBody = document.getElementById('reviewTable');
+  const recent = [...tasks].filter(t=>t.status!=='pending' || t.completion_pct>0).slice(0,25);
+  reviewBody.innerHTML = recent.length ? recent.map(t=>{
+    const emp = employees.find(e=>e.id===t.employee_id);
+    return `<tr>
+      <td>${emp?emp.name:'—'}</td>
+      <td>${escapeHtml(t.title)}</td>
+      <td>${t.task_date}</td>
+      <td><span class="status-badge status-${t.status}">${t.status.replace('_',' ')}</span></td>
+      <td>${t.completion_pct}%</td>
+      <td>${t.link ? `<a href="${escapeAttr(t.link)}" target="_blank" rel="noopener">🔗</a>` : '—'}</td>
+      <td><select data-rate="${t.id}"><option value="">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}" ${t.quality_rating==n?'selected':''}>${n}</option>`).join('')}</select></td>
+      <td><input type="text" placeholder="Add a note…" value="${escapeAttr(t.admin_comment||'')}" style="width:150px;" data-comment="${t.id}"></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="8" class="empty">No task activity yet.</td></tr>`;
+  reviewBody.querySelectorAll('[data-rate]').forEach(sel=>{
+    sel.addEventListener('change', async (e)=>{
+      await updateTask(e.target.dataset.rate, { quality_rating: e.target.value ? parseInt(e.target.value) : null });
+    });
+  });
+  reviewBody.querySelectorAll('[data-comment]').forEach(inp=>{
+    inp.addEventListener('change', async (e)=>{
+      await updateTask(e.target.dataset.comment, { admin_comment: e.target.value.trim() || null });
+    });
+  });
+}
+
+document.getElementById('addEmpForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const name = document.getElementById('newEmpName').value.trim();
+  const role = document.getElementById('newEmpRole').value.trim();
+  const weekly = parseInt(document.getElementById('newEmpWeekly').value)||5;
+  const monthly = parseInt(document.getElementById('newEmpMonthly').value)||20;
+  if (!name) return;
+  await addEmployee(name, role, weekly, monthly);
+  e.target.reset();
+  document.getElementById('newEmpWeekly').value = 5;
+  document.getElementById('newEmpMonthly').value = 20;
+});
+
+document.getElementById('genReportBtn').addEventListener('click', ()=>{
+  const weekStart = startOfWeek();
+  const lines = [];
+  lines.push(`WEEKLY MARKETING TEAM ASSESSMENT`);
+  lines.push(`Week of ${weekStart.toLocaleDateString('en-IN',{day:'numeric',month:'long'})} – ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}`);
+  lines.push('');
+  let anyBehind = false;
+  employees.filter(e=>e.active && !e.is_admin).forEach(emp=>{
+    const wk = statsFor(emp.id, weekStart);
+    const pct = emp.weekly_target ? Math.round((wk.completed/emp.weekly_target)*100) : 0;
+    const ratedTasks = tasks.filter(t=>t.employee_id===emp.id && new Date(t.task_date)>=weekStart && t.quality_rating);
+    const avgQuality = ratedTasks.length ? (ratedTasks.reduce((s,t)=>s+t.quality_rating,0)/ratedTasks.length).toFixed(1) : '—';
+    const kraTotal = weightedKraScore(emp.id);
+    const kraStr = kraTotal.score!==null ? `${kraTotal.score}/100 (${kraTotal.scoredCount}/${kraTotal.total} KRAs scored)` : 'not yet scored this month';
+    lines.push(`${emp.name} — ${wk.completed}/${emp.weekly_target} tasks completed (${pct}%) · Avg quality: ${avgQuality} · KRA score: ${kraStr}`);
+    if (pct < 100){
+      anyBehind = true;
+      const missed = emp.weekly_target - wk.completed;
+      lines.push(`   ⚠ ${missed} task${missed===1?'':'s'} short of weekly target.`);
+    }
+  });
+  lines.push('');
+  lines.push(anyBehind ? 'Flagged: one or more team members finished the week below their weekly target — see above.' : 'All team members met their weekly targets this week.');
+  const box = document.getElementById('reportBox');
+  box.style.display = 'block';
+  box.textContent = lines.join('\n');
+  document.getElementById('copyReportBtn').style.display = 'inline-block';
+});
+document.getElementById('copyReportBtn').addEventListener('click', ()=>{
+  navigator.clipboard.writeText(document.getElementById('reportBox').textContent);
+});
+
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s){ return escapeHtml(s||''); }
+
+function render(){
+  renderWhoSelect();
+  renderTasks();
+  renderDashboard();
+  if (currentUser && currentUser.is_admin) renderAdmin();
+}
+
+/* ====================== Init ====================== */
+(async function init(){
+  await refreshAll();
+})();
+</script>
+</body>
+</html>
