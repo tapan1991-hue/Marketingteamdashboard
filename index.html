@@ -363,7 +363,7 @@
     <div class="card">
       <div class="subhead" style="margin-top:0;">Team Members &amp; Targets</div>
       <table>
-        <thead><tr><th>Name</th><th>Role</th><th>Weekly Target</th><th>Monthly Target</th><th>Active</th><th></th></tr></thead>
+        <thead><tr><th>Name</th><th>Role</th><th>Weekly Target</th><th>Monthly Target</th><th>Counts Toward Target</th><th>Active</th><th></th></tr></thead>
         <tbody id="employeeTable"></tbody>
       </table>
       <form id="addEmpForm" style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
@@ -470,10 +470,10 @@ async function pgDelete(table, id){
 
 /* ====================== In-memory demo data (used until Supabase is connected) ====================== */
 let demoEmployees = [
-  { id:"e1", name:"Bhavyaa", role:"Content Strategist", is_admin:false, weekly_target:5, monthly_target:20, active:true, casual_leave_annual:12, sick_leave_annual:12, earned_leave_annual:15 },
-  { id:"e2", name:"Nidhi", role:"Digital Marketing Specialist", is_admin:false, weekly_target:5, monthly_target:20, active:true, casual_leave_annual:12, sick_leave_annual:12, earned_leave_annual:15 },
-  { id:"e3", name:"Yash", role:"Editor (Graphic & Video)", is_admin:false, weekly_target:5, monthly_target:20, active:true, casual_leave_annual:12, sick_leave_annual:12, earned_leave_annual:15 },
-  { id:"e4", name:"Tapan", role:"Admin", is_admin:true, weekly_target:5, monthly_target:20, active:true, casual_leave_annual:12, sick_leave_annual:12, earned_leave_annual:15 },
+  { id:"e1", name:"Bhavyaa", role:"Content Strategist", is_admin:false, weekly_target:5, monthly_target:20, active:true, casual_leave_annual:12, sick_leave_annual:12, earned_leave_annual:15, target_scope:"posts_published" },
+  { id:"e2", name:"Nidhi", role:"Digital Marketing Specialist", is_admin:false, weekly_target:5, monthly_target:20, active:true, casual_leave_annual:12, sick_leave_annual:12, earned_leave_annual:15, target_scope:"cat:ads" },
+  { id:"e3", name:"Yash", role:"Editor (Graphic & Video)", is_admin:false, weekly_target:5, monthly_target:20, active:true, casual_leave_annual:12, sick_leave_annual:12, earned_leave_annual:15, target_scope:"cat:design" },
+  { id:"e4", name:"Tapan", role:"Admin", is_admin:true, weekly_target:5, monthly_target:20, active:true, casual_leave_annual:12, sick_leave_annual:12, earned_leave_annual:15, target_scope:"all" },
 ];
 let demoTasks = [];
 let demoKras = [
@@ -1046,15 +1046,22 @@ function effectiveTarget(empId, periodType, defaultTarget, periodStartStr){
 }
 
 /* ====================== Render: Dashboard ====================== */
-function statsFor(empId, sinceDate){
-  const relevant = tasks.filter(t => t.employee_id === empId && new Date(t.task_date) >= sinceDate);
-  const completed = relevant.filter(t => t.status === 'completed').length;
-  return { total: relevant.length, completed };
+function deliverableCompletedCount(emp, sinceDate, untilDate){
+  const scope = emp.target_scope || 'all';
+  const inRange = (d) => { const dt = new Date(d); return dt >= sinceDate && (!untilDate || dt < untilDate); };
+  if (scope === 'posts_published'){
+    return contentStages.filter(s => s.stage_name==='posting' && s.done && s.assignee_id===emp.id && s.done_at && inRange(s.done_at)).length;
+  }
+  let relevant = tasks.filter(t => t.employee_id===emp.id && inRange(t.task_date) && t.status==='completed');
+  if (scope.startsWith('cat:')) relevant = relevant.filter(t => t.category === scope.slice(4));
+  return relevant.length;
 }
-function statsForRange(empId, start, end){
-  const relevant = tasks.filter(t => t.employee_id === empId && new Date(t.task_date) >= start && new Date(t.task_date) < end);
-  const completed = relevant.filter(t => t.status === 'completed').length;
-  return { total: relevant.length, completed };
+const SCOPE_LABELS = { all:'tasks', posts_published:'posts published', 'cat:content':'content tasks', 'cat:social':'social tasks', 'cat:ads':'ad tasks', 'cat:seo':'SEO tasks', 'cat:client':'client tasks', 'cat:design':'design tasks', 'cat:strategy':'strategy tasks', 'cat:other':'tasks' };
+function statsFor(emp, sinceDate){
+  return { completed: deliverableCompletedCount(emp, sinceDate) };
+}
+function statsForRange(emp, start, end){
+  return { completed: deliverableCompletedCount(emp, start, end) };
 }
 function prevWeekRange(){
   const thisStart = startOfWeek();
@@ -1097,9 +1104,9 @@ function renderDashboard(){
   const { start: pStart, end: pEnd } = prevWeekRange();
 
   grid.innerHTML = employees.filter(e=>e.active).map(emp=>{
-    const wk = statsFor(emp.id, weekStart);
-    const mo = statsFor(emp.id, monthStart);
-    const prevWk = statsForRange(emp.id, pStart, pEnd);
+    const wk = statsFor(emp, weekStart);
+    const mo = statsFor(emp, monthStart);
+    const prevWk = statsForRange(emp, pStart, pEnd);
     const wkTargetInfo = effectiveTarget(emp.id, 'week', emp.weekly_target, fmtDate(weekStart));
     const moTargetInfo = effectiveTarget(emp.id, 'month', emp.monthly_target, fmtDate(monthStart));
     const wkTarget = wkTargetInfo.value, moTarget = moTargetInfo.value;
@@ -1125,6 +1132,7 @@ function renderDashboard(){
     <div class="card emp-card">
       <h3>${emp.name} ${trendHtml}${onLeaveToday ? '<span class="tag" style="background:var(--gold);color:#fff;margin-left:4px;">On Leave</span>' : ''}</h3>
       <div class="emp-role">${emp.role||''}</div>
+      <div class="ci-meta" style="margin-bottom:8px;">Target counts: <b>${SCOPE_LABELS[emp.target_scope||'all']}</b></div>
       <div class="ring-row">
         <div>
           <div class="ring">${ringSVG(wkPct, wkColor)}<div class="ring-label"><b>${wk.completed}/${wkTarget}</b><span>this week${wkTargetInfo.isOverride?' <span class="custom-tag">·custom</span>':''}</span></div></div>
@@ -1293,6 +1301,11 @@ function renderAdmin(){
       <td>${emp.role||''}</td>
       <td><input type="number" value="${emp.weekly_target}" style="width:70px" data-field="weekly_target" data-id="${emp.id}"></td>
       <td><input type="number" value="${emp.monthly_target}" style="width:70px" data-field="monthly_target" data-id="${emp.id}"></td>
+      <td>
+        <select data-field="target_scope" data-id="${emp.id}" style="width:150px;">
+          ${Object.entries(SCOPE_LABELS).map(([val,lbl])=>`<option value="${val}" ${(emp.target_scope||'all')===val?'selected':''}>${lbl}</option>`).join('')}
+        </select>
+      </td>
       <td><input type="checkbox" ${emp.active?'checked':''} data-field="active" data-id="${emp.id}"></td>
       <td><button class="btn ghost small" data-save="${emp.id}">Save</button></td>
     </tr>`).join('');
@@ -1303,7 +1316,8 @@ function renderAdmin(){
       const weekly = parseInt(row.querySelector('[data-field=weekly_target]').value);
       const monthly = parseInt(row.querySelector('[data-field=monthly_target]').value);
       const active = row.querySelector('[data-field=active]').checked;
-      await updateEmployee(id, { weekly_target:weekly, monthly_target:monthly, active });
+      const targetScope = row.querySelector('[data-field=target_scope]').value;
+      await updateEmployee(id, { weekly_target:weekly, monthly_target:monthly, active, target_scope: targetScope });
     });
   });
 
@@ -1355,7 +1369,7 @@ document.getElementById('genReportBtn').addEventListener('click', ()=>{
   lines.push('');
   let anyBehind = false;
   employees.filter(e=>e.active && !e.is_admin).forEach(emp=>{
-    const wk = statsFor(emp.id, weekStart);
+    const wk = statsFor(emp, weekStart);
     const wkTargetInfo = effectiveTarget(emp.id, 'week', emp.weekly_target, fmtDate(weekStart));
     const target = wkTargetInfo.value;
     const pct = target ? Math.round((wk.completed/target)*100) : 0;
