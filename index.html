@@ -110,6 +110,71 @@
   .wt-total{font-size:12px;color:var(--muted);margin-bottom:8px;}
   .wt-total.bad{color:var(--danger);font-weight:600;}
 
+  /* Attendance & Leave */
+  .att-buttons{display:flex;gap:8px;flex-wrap:wrap;}
+  .att-btn{padding:9px 16px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-family:'Inter';font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink);}
+  .att-btn.present.active{background:var(--success-bg);border-color:var(--success);color:var(--success);}
+  .att-btn.half_day.active{background:var(--warning-bg);border-color:var(--warning);color:var(--warning);}
+  .att-btn.wfh.active{background:#E7EEFB;border-color:var(--navy);color:var(--navy);}
+  .att-btn.absent.active{background:var(--danger-bg);border-color:var(--danger);color:var(--danger);}
+  .on-leave-note{background:var(--gold-soft);color:#6B4E1F;font-size:13px;font-weight:600;padding:10px 14px;border-radius:8px;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px;}
+  .cal-day{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+  .cal-day.present{background:var(--success);}
+  .cal-day.half_day{background:var(--warning);}
+  .cal-day.wfh{background:var(--navy);}
+  .cal-day.leave{background:var(--gold);}
+  .cal-day.absent{background:var(--danger);}
+  .cal-day.unmarked{background:#EDEBE6;color:var(--muted);}
+  .cal-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11.5px;color:var(--muted);}
+  .cal-legend span{display:inline-flex;align-items:center;gap:5px;}
+  .cal-legend i{width:10px;height:10px;border-radius:3px;display:inline-block;}
+  .leave-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px;}
+  @media (max-width:700px){.leave-cards{grid-template-columns:1fr;}}
+  .leave-card{background:#FCFBF9;border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+  .leave-card .num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--navy);}
+  .leave-card .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-top:2px;}
+  .leave-form{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+  .leave-form input, .leave-form select{flex:1;min-width:120px;}
+  .status-pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:capitalize;}
+  .status-pill.pending{background:var(--warning-bg);color:var(--warning);}
+  .status-pill.approved{background:var(--success-bg);color:var(--success);}
+  .status-pill.rejected{background:var(--danger-bg);color:var(--danger);}
+
+  /* Content Calendar */
+  .platform-tabs{display:flex;gap:8px;margin-bottom:16px;}
+  .platform-tabs button{padding:7px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-family:'Inter';font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);}
+  .platform-tabs button.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .content-item{border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px;}
+  .content-item.overdue{border-color:var(--danger);}
+  .content-item-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+  .ci-title{font-weight:600;font-size:15px;}
+  .ci-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .platform-badge{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:3px 9px;border-radius:20px;}
+  .platform-badge.instagram{background:#FCE7F3;color:#BE185D;}
+  .platform-badge.linkedin{background:#DBEAFE;color:#1D4ED8;}
+  .overall-pill{font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;}
+  .overall-pill.not_started{background:#EEE;color:var(--muted);}
+  .overall-pill.in_progress{background:var(--warning-bg);color:var(--warning);}
+  .overall-pill.ready{background:#E7EEFB;color:var(--navy);}
+  .overall-pill.posted{background:var(--success-bg);color:var(--success);}
+  .stage-row{display:grid;grid-template-columns:110px 1fr 90px;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--border);}
+  .stage-row:first-of-type{border-top:none;}
+  .stage-label{font-size:12.5px;font-weight:600;color:var(--muted);text-transform:capitalize;}
+  .stage-row select{width:100%;padding:6px 8px;font-size:13px;}
+  .stage-done-btn{padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);white-space:nowrap;}
+  .stage-done-btn.done{background:var(--success-bg);border-color:var(--success);color:var(--success);}
+  .ci-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;}
+  .new-content-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;}
+  .new-content-form input, .new-content-form select{width:100%;}
+  @media (max-width:700px){.new-content-form{grid-template-columns:1fr;}}
+  .stage-assign-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;}
+  @media (max-width:700px){.stage-assign-grid{grid-template-columns:1fr;}}
+  .stage-assign-grid label{font-size:11px;color:var(--muted);text-transform:capitalize;display:block;margin-bottom:3px;}
+  .custom-tag{font-size:9.5px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.3px;}
+  .override-form{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .override-form select, .override-form input{min-width:110px;}
+
   /* Admin */
   table{width:100%;border-collapse:collapse;font-size:13.5px;}
   th{text-align:left;color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;padding:8px 6px;border-bottom:1px solid var(--border);}
@@ -141,6 +206,8 @@
 <nav>
   <div class="app">
     <button data-tab="tasks" class="active">My Tasks</button>
+    <button data-tab="attendance">Attendance &amp; Leave</button>
+    <button data-tab="content">Content Calendar</button>
     <button data-tab="dashboard">Team Dashboard</button>
     <button data-tab="admin" id="adminTabBtn" style="display:none;">Admin</button>
   </div>
@@ -175,6 +242,112 @@
     </div>
   </section>
 
+  <!-- ATTENDANCE & LEAVE TAB -->
+  <section id="tab-attendance" style="display:none;">
+    <h2>Attendance &amp; Leave</h2>
+    <p class="section-sub">Mark today's status, apply for leave, and track balances.</p>
+
+    <div class="card">
+      <div class="subhead" style="margin-top:0;">Today's Status</div>
+      <div id="leaveTodayNote"></div>
+      <div class="att-buttons" id="attButtons"></div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="subhead" style="margin-top:0;">This Month</div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend">
+        <span><i style="background:var(--success)"></i>Present</span>
+        <span><i style="background:var(--warning)"></i>Half Day</span>
+        <span><i style="background:var(--navy)"></i>WFH</span>
+        <span><i style="background:var(--gold)"></i>Leave</span>
+        <span><i style="background:var(--danger)"></i>Absent</span>
+        <span><i style="background:#EDEBE6"></i>Unmarked</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="subhead" style="margin-top:0;">Leave Balance (this year)</div>
+      <div class="leave-cards" id="leaveBalanceCards"></div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="subhead" style="margin-top:0;">Apply for Leave</div>
+      <form class="leave-form" id="leaveForm">
+        <select id="leaveType">
+          <option value="casual">Casual</option>
+          <option value="sick">Sick</option>
+          <option value="earned">Earned</option>
+          <option value="unpaid">Unpaid</option>
+        </select>
+        <input type="date" id="leaveStart" required>
+        <input type="date" id="leaveEnd" required>
+        <input type="text" id="leaveReason" placeholder="Reason">
+        <button class="btn" type="submit">Apply</button>
+      </form>
+      <table style="margin-top:16px;">
+        <thead><tr><th>Type</th><th>Dates</th><th>Days</th><th>Status</th><th>Note</th></tr></thead>
+        <tbody id="myLeaveTable"></tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:18px;" id="pendingApprovalsCard">
+      <div class="subhead" style="margin-top:0;">Pending Leave Approvals</div>
+      <table>
+        <thead><tr><th>Employee</th><th>Type</th><th>Dates</th><th>Days</th><th>Reason</th><th></th></tr></thead>
+        <tbody id="pendingApprovalsTable"></tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:18px;" id="teamAttendanceCard">
+      <div class="subhead" style="margin-top:0;">Team Attendance — This Month</div>
+      <table>
+        <thead><tr><th>Employee</th><th>Present</th><th>Half Day</th><th>WFH</th><th>Leave</th><th>Absent</th></tr></thead>
+        <tbody id="teamAttendanceTable"></tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:18px;" id="leaveAllotmentsCard">
+      <div class="subhead" style="margin-top:0;">Annual Leave Allotments</div>
+      <table>
+        <thead><tr><th>Employee</th><th>Casual</th><th>Sick</th><th>Earned</th><th></th></tr></thead>
+        <tbody id="leaveAllotmentsTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CONTENT CALENDAR TAB -->
+  <section id="tab-content" style="display:none;">
+    <h2>Content Calendar</h2>
+    <p class="section-sub">Instagram &amp; LinkedIn posts — scripting, shooting, editing, and posting tracked per person.</p>
+
+    <div class="card">
+      <div class="subhead" style="margin-top:0;">New Content Item</div>
+      <form id="contentForm">
+        <div class="new-content-form">
+          <select id="ciPlatform">
+            <option value="instagram">Instagram</option>
+            <option value="linkedin">LinkedIn</option>
+          </select>
+          <input type="text" id="ciType" placeholder="Format (Reel, Carousel, Article…)">
+          <input type="text" id="ciTitle" placeholder="Title / topic" required style="grid-column:1/-1;">
+          <input type="date" id="ciDate" placeholder="Target post date">
+        </div>
+        <div class="stage-assign-grid" id="stageAssignGrid"></div>
+        <button class="btn" type="submit" style="margin-top:12px;">+ Add to Calendar</button>
+      </form>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="platform-tabs" id="platformTabs">
+        <button data-platform="all" class="active">All</button>
+        <button data-platform="instagram">Instagram</button>
+        <button data-platform="linkedin">LinkedIn</button>
+      </div>
+      <div id="contentList"></div>
+    </div>
+  </section>
+
   <!-- DASHBOARD TAB -->
   <section id="tab-dashboard" style="display:none;">
     <h2>Team Performance</h2>
@@ -200,6 +373,25 @@
         <input type="number" id="newEmpMonthly" placeholder="Monthly target" value="20" style="width:130px;">
         <button class="btn ghost" type="submit">+ Add Member</button>
       </form>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="subhead" style="margin-top:0;">Target Overrides</div>
+      <p class="note" style="margin-top:0;">Set a one-off target for a specific week or month — overrides the default above, just for that period. Useful for holidays, short weeks, or a push month.</p>
+      <form class="override-form" id="overrideForm">
+        <select id="ovEmployee"></select>
+        <select id="ovPeriodType">
+          <option value="week">Week containing…</option>
+          <option value="month">Month containing…</option>
+        </select>
+        <input type="date" id="ovDate" required>
+        <input type="number" id="ovTarget" placeholder="Target" required style="width:90px;">
+        <button class="btn ghost small" type="submit">+ Set Override</button>
+      </form>
+      <table style="margin-top:12px;">
+        <thead><tr><th>Employee</th><th>Period</th><th>Starting</th><th>Target</th><th></th></tr></thead>
+        <tbody id="overrideTable"></tbody>
+      </table>
     </div>
 
     <div class="card" style="margin-top:18px;">
@@ -278,10 +470,10 @@ async function pgDelete(table, id){
 
 /* ====================== In-memory demo data (used until Supabase is connected) ====================== */
 let demoEmployees = [
-  { id:"e1", name:"Bhavyaa", role:"Content Strategist", is_admin:false, weekly_target:5, monthly_target:20, active:true },
-  { id:"e2", name:"Nidhi", role:"Digital Marketing Specialist", is_admin:false, weekly_target:5, monthly_target:20, active:true },
-  { id:"e3", name:"Yash", role:"Editor (Graphic & Video)", is_admin:false, weekly_target:5, monthly_target:20, active:true },
-  { id:"e4", name:"Tapan", role:"Admin", is_admin:true, weekly_target:5, monthly_target:20, active:true },
+  { id:"e1", name:"Bhavyaa", role:"Content Strategist", is_admin:false, weekly_target:5, monthly_target:20, active:true, casual_leave_annual:12, sick_leave_annual:12, earned_leave_annual:15 },
+  { id:"e2", name:"Nidhi", role:"Digital Marketing Specialist", is_admin:false, weekly_target:5, monthly_target:20, active:true, casual_leave_annual:12, sick_leave_annual:12, earned_leave_annual:15 },
+  { id:"e3", name:"Yash", role:"Editor (Graphic & Video)", is_admin:false, weekly_target:5, monthly_target:20, active:true, casual_leave_annual:12, sick_leave_annual:12, earned_leave_annual:15 },
+  { id:"e4", name:"Tapan", role:"Admin", is_admin:true, weekly_target:5, monthly_target:20, active:true, casual_leave_annual:12, sick_leave_annual:12, earned_leave_annual:15 },
 ];
 let demoTasks = [];
 let demoKras = [
@@ -311,12 +503,23 @@ let demoKras = [
   { id:"k22", employee_id:"e3", name:"Asset Organization & Handover", kpi:"Raw files, templates, and finals organized and accessible", weightage:10, monthly_score:null },
 ];
 let idCounter = 1;
+let demoAttendance = [];
+let demoLeaveRequests = [];
+let demoContentItems = [];
+let demoContentStages = [];
+let demoTargetOverrides = [];
 
 let currentUser = null;
 let employees = [];
 let tasks = [];
 let kras = [];
+let attendance = [];
+let leaveRequests = [];
+let contentItems = [];
+let contentStages = [];
+let targetOverrides = [];
 let activeTab = "tasks";
+let contentPlatformFilter = "all";
 
 const todayStr = () => new Date().toISOString().slice(0,10);
 const startOfWeek = () => { const d=new Date(); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); d.setHours(0,0,0,0); return d; };
@@ -390,10 +593,121 @@ async function deleteKra(id){
   await refreshAll();
 }
 
+async function loadAttendance(){
+  if (DEMO_MODE){ attendance = demoAttendance; return; }
+  attendance = await pgSelect('attendance', 'att_date.desc');
+}
+async function markAttendance(employeeId, dateStr, status){
+  if (DEMO_MODE){
+    const existing = demoAttendance.find(a=>a.employee_id===employeeId && a.att_date===dateStr);
+    if (existing) existing.status = status;
+    else demoAttendance.push({ id:'a'+(idCounter++), employee_id:employeeId, att_date:dateStr, status });
+    await refreshAll(); return;
+  }
+  const existing = attendance.find(a=>a.employee_id===employeeId && a.att_date===dateStr);
+  if (existing) await pgUpdate('attendance', existing.id, { status });
+  else await pgInsert('attendance', { employee_id: employeeId, att_date: dateStr, status });
+  await refreshAll();
+}
+
+async function loadLeaveRequests(){
+  if (DEMO_MODE){ leaveRequests = demoLeaveRequests; return; }
+  leaveRequests = await pgSelect('leave_requests', 'created_at.desc');
+}
+async function applyLeave(employeeId, leaveType, startDate, endDate, reason, days){
+  if (DEMO_MODE){
+    demoLeaveRequests.unshift({ id:'l'+(idCounter++), employee_id:employeeId, leave_type:leaveType, start_date:startDate, end_date:endDate, days, reason, status:'pending', admin_comment:null, created_at:new Date().toISOString() });
+    await refreshAll(); return;
+  }
+  await pgInsert('leave_requests', { employee_id: employeeId, leave_type: leaveType, start_date: startDate, end_date: endDate, days, reason });
+  await refreshAll();
+}
+async function updateLeaveRequest(id, fields){
+  if (DEMO_MODE){
+    const l = demoLeaveRequests.find(l=>l.id===id); Object.assign(l, fields); await refreshAll(); return;
+  }
+  await pgUpdate('leave_requests', id, fields);
+  await refreshAll();
+}
+
+const CONTENT_STAGE_NAMES = ['scripting','shooting','editing','approval','posting'];
+
+async function loadContentItems(){
+  if (DEMO_MODE){ contentItems = demoContentItems; return; }
+  contentItems = await pgSelect('content_items', 'target_date.asc');
+}
+async function loadContentStages(){
+  if (DEMO_MODE){ contentStages = demoContentStages; return; }
+  contentStages = await pgSelect('content_stages', 'created_at.asc');
+}
+async function addContentItem(platform, title, contentType, targetDate, assignees){
+  if (DEMO_MODE){
+    const itemId = 'ci'+(idCounter++);
+    demoContentItems.push({ id:itemId, platform, title, content_type:contentType, target_date:targetDate||null, notes:null, created_at:new Date().toISOString() });
+    CONTENT_STAGE_NAMES.forEach(stage=>{
+      demoContentStages.push({ id:'cs'+(idCounter++), content_item_id:itemId, stage_name:stage, assignee_id: assignees[stage]||null, done:false, done_at:null });
+    });
+    await refreshAll(); return;
+  }
+  const inserted = await pgInsert('content_items', { platform, title, content_type: contentType||null, target_date: targetDate||null });
+  const itemId = inserted && inserted[0] ? inserted[0].id : null;
+  if (itemId){
+    for (const stage of CONTENT_STAGE_NAMES){
+      await pgInsert('content_stages', { content_item_id: itemId, stage_name: stage, assignee_id: assignees[stage]||null });
+    }
+  }
+  await refreshAll();
+}
+async function updateContentStage(id, fields){
+  if (DEMO_MODE){
+    const s = demoContentStages.find(s=>s.id===id); Object.assign(s, fields); await refreshAll(); return;
+  }
+  await pgUpdate('content_stages', id, fields);
+  await refreshAll();
+}
+async function deleteContentItem(id){
+  if (DEMO_MODE){
+    demoContentItems = demoContentItems.filter(c=>c.id!==id);
+    demoContentStages = demoContentStages.filter(s=>s.content_item_id!==id);
+    await refreshAll(); return;
+  }
+  await pgDelete('content_items', id); // content_stages cascade via FK on the live DB
+  await refreshAll();
+}
+
+async function loadTargetOverrides(){
+  if (DEMO_MODE){ targetOverrides = demoTargetOverrides; return; }
+  targetOverrides = await pgSelect('target_overrides', 'period_start.desc');
+}
+async function setTargetOverride(employeeId, periodType, periodStart, target){
+  const existing = targetOverrides.find(o=>o.employee_id===employeeId && o.period_type===periodType && o.period_start===periodStart);
+  if (DEMO_MODE){
+    if (existing) existing.target = target;
+    else demoTargetOverrides.push({ id:'ov'+(idCounter++), employee_id:employeeId, period_type:periodType, period_start:periodStart, target });
+    await refreshAll(); return;
+  }
+  if (existing) await pgUpdate('target_overrides', existing.id, { target });
+  else await pgInsert('target_overrides', { employee_id: employeeId, period_type: periodType, period_start: periodStart, target });
+  await refreshAll();
+}
+async function deleteTargetOverride(id){
+  if (DEMO_MODE){
+    demoTargetOverrides = demoTargetOverrides.filter(o=>o.id!==id);
+    await refreshAll(); return;
+  }
+  await pgDelete('target_overrides', id);
+  await refreshAll();
+}
+
 async function refreshAll(){
   await loadEmployees();
   await loadTasks();
   await loadKras();
+  await loadAttendance();
+  await loadLeaveRequests();
+  await loadContentItems();
+  await loadContentStages();
+  await loadTargetOverrides();
   render();
 }
 
@@ -420,7 +734,7 @@ document.querySelectorAll('nav button[data-tab]').forEach(btn=>{
 function switchTab(tab){
   activeTab = tab;
   document.querySelectorAll('nav button[data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
-  ['tasks','dashboard','admin'].forEach(t=>{
+  ['tasks','attendance','content','dashboard','admin'].forEach(t=>{
     document.getElementById('tab-'+t).style.display = (t===tab) ? 'block' : 'none';
   });
 }
@@ -465,6 +779,271 @@ document.getElementById('taskForm').addEventListener('submit', async (e)=>{
   document.getElementById('newTaskTitle').value = '';
   document.getElementById('newTaskLink').value = '';
 });
+
+/* ====================== Render: Attendance & Leave ====================== */
+function daysInclusive(start, end){
+  const s = new Date(start), e = new Date(end);
+  return Math.round((e-s)/(1000*60*60*24)) + 1;
+}
+function approvedLeaveOn(empId, dateStr){
+  return leaveRequests.find(l => l.employee_id===empId && l.status==='approved' && dateStr >= l.start_date && dateStr <= l.end_date);
+}
+function effectiveStatus(empId, dateStr){
+  const lv = approvedLeaveOn(empId, dateStr);
+  if (lv) return 'leave';
+  const att = attendance.find(a => a.employee_id===empId && a.att_date===dateStr);
+  return att ? att.status : 'unmarked';
+}
+function leaveUsedThisYear(empId, leaveType){
+  const year = new Date().getFullYear();
+  return leaveRequests
+    .filter(l => l.employee_id===empId && l.leave_type===leaveType && l.status==='approved' && new Date(l.start_date).getFullYear()===year)
+    .reduce((s,l)=> s + Number(l.days), 0);
+}
+
+function renderAttendance(){
+  if (!currentUser) return;
+  const todayLeave = approvedLeaveOn(currentUser.id, todayStr());
+  const noteEl = document.getElementById('leaveTodayNote');
+  const btnWrap = document.getElementById('attButtons');
+  if (todayLeave){
+    noteEl.innerHTML = `<div class="on-leave-note">You're on approved ${todayLeave.leave_type} leave today.</div>`;
+    btnWrap.innerHTML = '';
+  } else {
+    noteEl.innerHTML = '';
+    const todayAtt = attendance.find(a=>a.employee_id===currentUser.id && a.att_date===todayStr());
+    const cur = todayAtt ? todayAtt.status : null;
+    const opts = [['present','Present'],['half_day','Half Day'],['wfh','WFH'],['absent','Absent']];
+    btnWrap.innerHTML = opts.map(([val,lbl])=>`<button type="button" class="att-btn ${val} ${cur===val?'active':''}" data-att="${val}">${lbl}</button>`).join('');
+    btnWrap.querySelectorAll('[data-att]').forEach(b=>{
+      b.addEventListener('click', async ()=> await markAttendance(currentUser.id, todayStr(), b.dataset.att));
+    });
+  }
+
+  // Month calendar for current user
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth();
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  const cal = document.getElementById('calGrid');
+  let cells = '';
+  for (let d=1; d<=daysInMonth; d++){
+    const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    if (ds > todayStr()) break;
+    const st = effectiveStatus(currentUser.id, ds);
+    cells += `<div class="cal-day ${st}" title="${ds}">${d}</div>`;
+  }
+  cal.innerHTML = cells;
+
+  // Leave balance cards
+  const bal = document.getElementById('leaveBalanceCards');
+  const types = [['casual','Casual','casual_leave_annual'],['sick','Sick','sick_leave_annual'],['earned','Earned','earned_leave_annual']];
+  bal.innerHTML = types.map(([key,label,field])=>{
+    const total = currentUser[field] || 0;
+    const used = leaveUsedThisYear(currentUser.id, key);
+    return `<div class="leave-card"><div class="num">${Math.max(total-used,0)}</div><div class="lbl">${label} left (of ${total})</div></div>`;
+  }).join('');
+
+  // My leave requests
+  const myLeaves = leaveRequests.filter(l=>l.employee_id===currentUser.id);
+  const myTable = document.getElementById('myLeaveTable');
+  myTable.innerHTML = myLeaves.length ? myLeaves.map(l=>`
+    <tr>
+      <td style="text-transform:capitalize;">${l.leave_type}</td>
+      <td>${l.start_date} → ${l.end_date}</td>
+      <td>${l.days}</td>
+      <td><span class="status-pill ${l.status}">${l.status}</span></td>
+      <td style="color:var(--muted);font-size:12px;">${l.admin_comment||''}</td>
+    </tr>`).join('') : `<tr><td colspan="5" class="empty">No leave requests yet.</td></tr>`;
+
+  // Admin-only sections
+  const isAdmin = currentUser.is_admin;
+  document.getElementById('pendingApprovalsCard').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('teamAttendanceCard').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('leaveAllotmentsCard').style.display = isAdmin ? 'block' : 'none';
+  if (isAdmin){
+    const pending = leaveRequests.filter(l=>l.status==='pending');
+    const pendTable = document.getElementById('pendingApprovalsTable');
+    pendTable.innerHTML = pending.length ? pending.map(l=>{
+      const emp = employees.find(e=>e.id===l.employee_id);
+      return `<tr>
+        <td>${emp?emp.name:'—'}</td>
+        <td style="text-transform:capitalize;">${l.leave_type}</td>
+        <td>${l.start_date} → ${l.end_date}</td>
+        <td>${l.days}</td>
+        <td>${escapeHtml(l.reason||'')}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn small" data-approve="${l.id}">Approve</button>
+          <button class="btn ghost small" data-reject="${l.id}">Reject</button>
+        </td>
+      </tr>`;
+    }).join('') : `<tr><td colspan="6" class="empty">No pending requests.</td></tr>`;
+    pendTable.querySelectorAll('[data-approve]').forEach(b=>{
+      b.addEventListener('click', async ()=> await updateLeaveRequest(b.dataset.approve, { status:'approved' }));
+    });
+    pendTable.querySelectorAll('[data-reject]').forEach(b=>{
+      b.addEventListener('click', async ()=> await updateLeaveRequest(b.dataset.reject, { status:'rejected' }));
+    });
+
+    const teamBody = document.getElementById('teamAttendanceTable');
+    teamBody.innerHTML = employees.filter(e=>e.active).map(emp=>{
+      const counts = { present:0, half_day:0, wfh:0, leave:0, absent:0 };
+      for (let d=1; d<=daysInMonth; d++){
+        const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if (ds > todayStr()) break;
+        const st = effectiveStatus(emp.id, ds);
+        if (counts[st]!==undefined) counts[st]++;
+      }
+      return `<tr><td>${emp.name}</td><td>${counts.present}</td><td>${counts.half_day}</td><td>${counts.wfh}</td><td>${counts.leave}</td><td>${counts.absent}</td></tr>`;
+    }).join('');
+
+    const allotBody = document.getElementById('leaveAllotmentsTable');
+    allotBody.innerHTML = employees.filter(e=>!e.is_admin).map(emp=>`
+      <tr>
+        <td>${emp.name}</td>
+        <td><input type="number" value="${emp.casual_leave_annual}" style="width:60px" data-allot="casual_leave_annual" data-id="${emp.id}"></td>
+        <td><input type="number" value="${emp.sick_leave_annual}" style="width:60px" data-allot="sick_leave_annual" data-id="${emp.id}"></td>
+        <td><input type="number" value="${emp.earned_leave_annual}" style="width:60px" data-allot="earned_leave_annual" data-id="${emp.id}"></td>
+        <td><button class="btn ghost small" data-allot-save="${emp.id}">Save</button></td>
+      </tr>`).join('');
+    allotBody.querySelectorAll('[data-allot-save]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const id = btn.dataset.allotSave;
+        const row = btn.closest('tr');
+        const fields = {};
+        row.querySelectorAll('[data-allot]').forEach(inp=> fields[inp.dataset.allot] = parseInt(inp.value)||0);
+        await updateEmployee(id, fields);
+      });
+    });
+  }
+}
+
+document.getElementById('leaveForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const leaveType = document.getElementById('leaveType').value;
+  const start = document.getElementById('leaveStart').value;
+  const end = document.getElementById('leaveEnd').value;
+  const reason = document.getElementById('leaveReason').value.trim();
+  if (!start || !end || !currentUser) return;
+  if (end < start){ alert('End date must be after start date.'); return; }
+  const days = daysInclusive(start, end);
+  await applyLeave(currentUser.id, leaveType, start, end, reason, days);
+  e.target.reset();
+});
+
+/* ====================== Render: Content Calendar ====================== */
+function renderStageAssignGrid(){
+  const grid = document.getElementById('stageAssignGrid');
+  const opts = employees.filter(e=>e.active).map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  grid.innerHTML = CONTENT_STAGE_NAMES.map(stage=>`
+    <div>
+      <label>${stage}</label>
+      <select data-stage-owner="${stage}"><option value="">Unassigned</option>${opts}</select>
+    </div>`).join('');
+}
+
+document.getElementById('contentForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const platform = document.getElementById('ciPlatform').value;
+  const title = document.getElementById('ciTitle').value.trim();
+  const contentType = document.getElementById('ciType').value.trim();
+  const targetDate = document.getElementById('ciDate').value;
+  if (!title) return;
+  const assignees = {};
+  document.querySelectorAll('[data-stage-owner]').forEach(sel=>{ assignees[sel.dataset.stageOwner] = sel.value || null; });
+  await addContentItem(platform, title, contentType, targetDate, assignees);
+  e.target.reset();
+  renderStageAssignGrid();
+});
+
+document.getElementById('platformTabs').addEventListener('click', (e)=>{
+  if (e.target.tagName !== 'BUTTON') return;
+  contentPlatformFilter = e.target.dataset.platform;
+  document.querySelectorAll('#platformTabs button').forEach(b=> b.classList.toggle('active', b.dataset.platform===contentPlatformFilter));
+  renderContentList();
+});
+
+function overallContentStatus(itemId){
+  const stages = contentStages.filter(s=>s.content_item_id===itemId);
+  if (!stages.length) return 'not_started';
+  const postingDone = stages.find(s=>s.stage_name==='posting' && s.done);
+  if (postingDone) return 'posted';
+  const anyDone = stages.some(s=>s.done);
+  if (!anyDone) return 'not_started';
+  const allButPostingDone = stages.filter(s=>s.stage_name!=='posting').every(s=>s.done);
+  if (allButPostingDone) return 'ready';
+  return 'in_progress';
+}
+const STATUS_LABELS = { not_started:'Not started', in_progress:'In progress', ready:'Ready to post', posted:'Posted' };
+
+function renderContentList(){
+  const list = document.getElementById('contentList');
+  let items = [...contentItems];
+  if (contentPlatformFilter !== 'all') items = items.filter(c=>c.platform===contentPlatformFilter);
+  items.sort((a,b)=> (a.target_date||'9999') < (b.target_date||'9999') ? -1 : 1);
+
+  if (!items.length){ list.innerHTML = '<div class="empty">No content items yet — add one above.</div>'; return; }
+
+  list.innerHTML = items.map(item=>{
+    const stages = contentStages.filter(s=>s.content_item_id===item.id);
+    const status = overallContentStatus(item.id);
+    const overdue = item.target_date && item.target_date < todayStr() && status !== 'posted';
+    const opts = employees.filter(e=>e.active).map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+    return `
+    <div class="content-item ${overdue?'overdue':''}">
+      <div class="content-item-head">
+        <div>
+          <span class="platform-badge ${item.platform}">${item.platform}</span>
+          <div class="ci-title">${escapeHtml(item.title)}</div>
+          <div class="ci-meta">${item.content_type?escapeHtml(item.content_type)+' · ':''}${item.target_date?'Target: '+item.target_date:'No target date'}${overdue?' · <span style="color:var(--danger);font-weight:600;">Overdue</span>':''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="overall-pill ${status}">${STATUS_LABELS[status]}</span>
+          ${currentUser && currentUser.is_admin ? `<button class="ci-del" data-del-content="${item.id}" title="Delete">✕</button>` : ''}
+        </div>
+      </div>
+      ${CONTENT_STAGE_NAMES.map(stageName=>{
+        const s = stages.find(x=>x.stage_name===stageName);
+        if (!s) return '';
+        return `
+        <div class="stage-row">
+          <div class="stage-label">${stageName}</div>
+          <select data-assign-stage="${s.id}"><option value="">Unassigned</option>${opts.replace(`value="${s.assignee_id}"`, `value="${s.assignee_id}" selected`)}</select>
+          <button class="stage-done-btn ${s.done?'done':''}" data-toggle-stage="${s.id}" data-cur="${s.done}">${s.done?'✓ Done':'Mark Done'}</button>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+
+  list.querySelectorAll('[data-assign-stage]').forEach(sel=>{
+    sel.addEventListener('change', async (e)=>{
+      await updateContentStage(e.target.dataset.assignStage, { assignee_id: e.target.value || null });
+    });
+  });
+  list.querySelectorAll('[data-toggle-stage]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const nowDone = btn.dataset.cur !== 'true';
+      await updateContentStage(btn.dataset.toggleStage, { done: nowDone, done_at: nowDone ? new Date().toISOString() : null });
+    });
+  });
+  list.querySelectorAll('[data-del-content]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if (confirm('Delete this content item?')) await deleteContentItem(btn.dataset.delContent);
+    });
+  });
+}
+
+function renderContent(){
+  renderStageAssignGrid();
+  renderContentList();
+}
+
+function fmtDate(d){ return d.toISOString().slice(0,10); }
+function weekStartOf(dateStr){ const d = new Date(dateStr); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); return fmtDate(d); }
+function monthStartOf(dateStr){ const d = new Date(dateStr); d.setDate(1); return fmtDate(d); }
+function effectiveTarget(empId, periodType, defaultTarget, periodStartStr){
+  const ov = targetOverrides.find(o=>o.employee_id===empId && o.period_type===periodType && o.period_start===periodStartStr);
+  return { value: ov ? ov.target : defaultTarget, isOverride: !!ov };
+}
 
 /* ====================== Render: Dashboard ====================== */
 function statsFor(empId, sinceDate){
@@ -521,8 +1100,11 @@ function renderDashboard(){
     const wk = statsFor(emp.id, weekStart);
     const mo = statsFor(emp.id, monthStart);
     const prevWk = statsForRange(emp.id, pStart, pEnd);
-    const wkPct = emp.weekly_target ? Math.round((wk.completed/emp.weekly_target)*100) : 0;
-    const moPct = emp.monthly_target ? Math.round((mo.completed/emp.monthly_target)*100) : 0;
+    const wkTargetInfo = effectiveTarget(emp.id, 'week', emp.weekly_target, fmtDate(weekStart));
+    const moTargetInfo = effectiveTarget(emp.id, 'month', emp.monthly_target, fmtDate(monthStart));
+    const wkTarget = wkTargetInfo.value, moTarget = moTargetInfo.value;
+    const wkPct = wkTarget ? Math.round((wk.completed/wkTarget)*100) : 0;
+    const moPct = moTarget ? Math.round((mo.completed/moTarget)*100) : 0;
     const wkColor = wkPct>=100 ? 'var(--success)' : wkPct>=60 ? 'var(--gold)' : 'var(--danger)';
     const moColor = moPct>=100 ? 'var(--success)' : moPct>=60 ? 'var(--gold)' : 'var(--danger)';
 
@@ -537,22 +1119,23 @@ function renderDashboard(){
     const kraList = kras.filter(k => k.employee_id === emp.id).sort((a,b)=>b.weightage-a.weightage);
     const kraTotal = weightedKraScore(emp.id);
     const kraColor = kraTotal.score===null ? 'var(--muted)' : kraTotal.score>=80 ? 'var(--success)' : kraTotal.score>=60 ? 'var(--gold)' : 'var(--danger)';
+    const onLeaveToday = approvedLeaveOn(emp.id, todayStr());
 
     return `
     <div class="card emp-card">
-      <h3>${emp.name} ${trendHtml}</h3>
+      <h3>${emp.name} ${trendHtml}${onLeaveToday ? '<span class="tag" style="background:var(--gold);color:#fff;margin-left:4px;">On Leave</span>' : ''}</h3>
       <div class="emp-role">${emp.role||''}</div>
       <div class="ring-row">
         <div>
-          <div class="ring">${ringSVG(wkPct, wkColor)}<div class="ring-label"><b>${wk.completed}/${emp.weekly_target}</b><span>this week</span></div></div>
+          <div class="ring">${ringSVG(wkPct, wkColor)}<div class="ring-label"><b>${wk.completed}/${wkTarget}</b><span>this week${wkTargetInfo.isOverride?' <span class="custom-tag">·custom</span>':''}</span></div></div>
         </div>
         <div>
-          <div class="ring">${ringSVG(moPct, moColor)}<div class="ring-label"><b>${mo.completed}/${emp.monthly_target}</b><span>this month</span></div></div>
+          <div class="ring">${ringSVG(moPct, moColor)}<div class="ring-label"><b>${mo.completed}/${moTarget}</b><span>this month${moTargetInfo.isOverride?' <span class="custom-tag">·custom</span>':''}</span></div></div>
         </div>
       </div>
       <div class="stat-line"><span>Weekly completion</span><b>${wkPct}%</b></div>
       <div class="stat-line"><span>Monthly completion</span><b>${moPct}%</b></div>
-      ${wkPct<70 ? `<div class="flag">Behind on weekly target</div>` : ''}
+      ${wkPct<70 && !onLeaveToday ? `<div class="flag">Behind on weekly target</div>` : ''}
 
       ${kraList.length ? `
       <div class="subblock">
@@ -595,6 +1178,39 @@ function renderDashboard(){
 }
 
 /* ====================== Render: Admin ====================== */
+function renderOverrides(){
+  const empSel = document.getElementById('ovEmployee');
+  empSel.innerHTML = employees.filter(e=>!e.is_admin).map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+
+  const body = document.getElementById('overrideTable');
+  const sorted = [...targetOverrides].sort((a,b)=> b.period_start < a.period_start ? -1 : 1);
+  body.innerHTML = sorted.length ? sorted.map(o=>{
+    const emp = employees.find(e=>e.id===o.employee_id);
+    return `<tr>
+      <td>${emp?emp.name:'—'}</td>
+      <td style="text-transform:capitalize;">${o.period_type}</td>
+      <td>${o.period_start}</td>
+      <td>${o.target}</td>
+      <td><button class="btn ghost small" data-del-ov="${o.id}">✕</button></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="5" class="empty">No overrides set.</td></tr>`;
+  body.querySelectorAll('[data-del-ov]').forEach(btn=>{
+    btn.addEventListener('click', async ()=> await deleteTargetOverride(btn.dataset.delOv));
+  });
+}
+
+document.getElementById('overrideForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const employeeId = document.getElementById('ovEmployee').value;
+  const periodType = document.getElementById('ovPeriodType').value;
+  const pickedDate = document.getElementById('ovDate').value;
+  const target = parseInt(document.getElementById('ovTarget').value);
+  if (!employeeId || !pickedDate || isNaN(target)) return;
+  const periodStart = periodType === 'week' ? weekStartOf(pickedDate) : monthStartOf(pickedDate);
+  await setTargetOverride(employeeId, periodType, periodStart, target);
+  e.target.reset();
+});
+
 function renderKraAdmin(){
   const wrap = document.getElementById('kraAdmin');
   const nonAdmins = employees.filter(e=>!e.is_admin);
@@ -669,6 +1285,7 @@ function renderKraAdmin(){
 
 function renderAdmin(){
   renderKraAdmin();
+  renderOverrides();
   const tbody = document.getElementById('employeeTable');
   tbody.innerHTML = employees.map(emp=>`
     <tr>
@@ -739,15 +1356,17 @@ document.getElementById('genReportBtn').addEventListener('click', ()=>{
   let anyBehind = false;
   employees.filter(e=>e.active && !e.is_admin).forEach(emp=>{
     const wk = statsFor(emp.id, weekStart);
-    const pct = emp.weekly_target ? Math.round((wk.completed/emp.weekly_target)*100) : 0;
+    const wkTargetInfo = effectiveTarget(emp.id, 'week', emp.weekly_target, fmtDate(weekStart));
+    const target = wkTargetInfo.value;
+    const pct = target ? Math.round((wk.completed/target)*100) : 0;
     const ratedTasks = tasks.filter(t=>t.employee_id===emp.id && new Date(t.task_date)>=weekStart && t.quality_rating);
     const avgQuality = ratedTasks.length ? (ratedTasks.reduce((s,t)=>s+t.quality_rating,0)/ratedTasks.length).toFixed(1) : '—';
     const kraTotal = weightedKraScore(emp.id);
     const kraStr = kraTotal.score!==null ? `${kraTotal.score}/100 (${kraTotal.scoredCount}/${kraTotal.total} KRAs scored)` : 'not yet scored this month';
-    lines.push(`${emp.name} — ${wk.completed}/${emp.weekly_target} tasks completed (${pct}%) · Avg quality: ${avgQuality} · KRA score: ${kraStr}`);
+    lines.push(`${emp.name} — ${wk.completed}/${target}${wkTargetInfo.isOverride?' (custom target)':''} tasks completed (${pct}%) · Avg quality: ${avgQuality} · KRA score: ${kraStr}`);
     if (pct < 100){
       anyBehind = true;
-      const missed = emp.weekly_target - wk.completed;
+      const missed = target - wk.completed;
       lines.push(`   ⚠ ${missed} task${missed===1?'':'s'} short of weekly target.`);
     }
   });
@@ -768,6 +1387,8 @@ function escapeAttr(s){ return escapeHtml(s||''); }
 function render(){
   renderWhoSelect();
   renderTasks();
+  renderAttendance();
+  renderContent();
   renderDashboard();
   if (currentUser && currentUser.is_admin) renderAdmin();
 }
