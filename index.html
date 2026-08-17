@@ -119,6 +119,10 @@
   .att-btn.absent.active{background:var(--danger-bg);border-color:var(--danger);color:var(--danger);}
   .on-leave-note{background:var(--gold-soft);color:#6B4E1F;font-size:13px;font-weight:600;padding:10px 14px;border-radius:8px;}
   .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px;}
+  .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px;}
+  .cal-weekdays span{text-align:center;font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
+  .cal-weekdays span.sun{color:var(--danger);}
+  .cal-day.off{background:#D8DCE6;color:#5A6272;}
   .cal-day{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
   .cal-day.present{background:var(--success);}
   .cal-day.half_day{background:var(--warning);}
@@ -255,6 +259,7 @@
 
     <div class="card" style="margin-top:18px;">
       <div class="subhead" style="margin-top:0;">This Month</div>
+      <div class="cal-weekdays" id="calWeekdays"></div>
       <div class="cal-grid" id="calGrid"></div>
       <div class="cal-legend">
         <span><i style="background:var(--success)"></i>Present</span>
@@ -262,6 +267,7 @@
         <span><i style="background:var(--navy)"></i>WFH</span>
         <span><i style="background:var(--gold)"></i>Leave</span>
         <span><i style="background:var(--danger)"></i>Absent</span>
+        <span><i style="background:#D8DCE6"></i>Sunday Off</span>
         <span><i style="background:#EDEBE6"></i>Unmarked</span>
       </div>
     </div>
@@ -403,7 +409,7 @@
     <div class="card" style="margin-top:18px;">
       <div class="subhead" style="margin-top:0;">Rate &amp; Review Recent Tasks</div>
       <table>
-        <thead><tr><th>Employee</th><th>Task</th><th>Date</th><th>Status</th><th>%</th><th>Link</th><th>Quality</th><th>Comment</th></tr></thead>
+        <thead><tr><th>Employee</th><th>Task</th><th>Date</th><th>Status</th><th>%</th><th>Link</th><th>Quality</th><th>Comment</th><th></th></tr></thead>
         <tbody id="reviewTable"></tbody>
       </table>
     </div>
@@ -547,6 +553,14 @@ async function updateTask(id, fields){
     const t = demoTasks.find(t=>t.id===id); Object.assign(t, fields); await refreshAll(); return;
   }
   await pgUpdate('tasks', id, fields);
+  await refreshAll();
+}
+async function deleteTask(id){
+  if (DEMO_MODE){
+    demoTasks = demoTasks.filter(t=>t.id!==id);
+    await refreshAll(); return;
+  }
+  await pgDelete('tasks', id);
   await refreshAll();
 }
 async function addEmployee(name, role, weekly, monthly){
@@ -757,9 +771,15 @@ function renderTasks(){
         <input type="range" min="0" max="100" step="10" value="${t.completion_pct}" data-id="${t.id}" class="pctSlider">
         <span class="pct-label">${t.completion_pct}%</span>
         <span class="status-badge status-${t.status}">${t.status.replace('_',' ')}</span>
+        <button class="ci-del" data-del-task="${t.id}" title="Delete task">✕</button>
       </div>
     </div>
   `).join('');
+  document.querySelectorAll('[data-del-task]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if (confirm('Delete this task?')) await deleteTask(btn.dataset.delTask);
+    });
+  });
   document.querySelectorAll('.pctSlider').forEach(sl=>{
     sl.addEventListener('change', async (e)=>{
       const pct = parseInt(e.target.value);
@@ -789,6 +809,7 @@ function approvedLeaveOn(empId, dateStr){
   return leaveRequests.find(l => l.employee_id===empId && l.status==='approved' && dateStr >= l.start_date && dateStr <= l.end_date);
 }
 function effectiveStatus(empId, dateStr){
+  if (new Date(dateStr).getDay() === 0) return 'off';
   const lv = approvedLeaveOn(empId, dateStr);
   if (lv) return 'leave';
   const att = attendance.find(a => a.employee_id===empId && a.att_date===dateStr);
@@ -803,10 +824,14 @@ function leaveUsedThisYear(empId, leaveType){
 
 function renderAttendance(){
   if (!currentUser) return;
+  const isSunday = new Date().getDay() === 0;
   const todayLeave = approvedLeaveOn(currentUser.id, todayStr());
   const noteEl = document.getElementById('leaveTodayNote');
   const btnWrap = document.getElementById('attButtons');
-  if (todayLeave){
+  if (isSunday){
+    noteEl.innerHTML = `<div class="on-leave-note">It's Sunday — weekly off.</div>`;
+    btnWrap.innerHTML = '';
+  } else if (todayLeave){
     noteEl.innerHTML = `<div class="on-leave-note">You're on approved ${todayLeave.leave_type} leave today.</div>`;
     btnWrap.innerHTML = '';
   } else {
@@ -820,12 +845,20 @@ function renderAttendance(){
     });
   }
 
-  // Month calendar for current user
+  // Month calendar for current user — weekday-aligned, Mon-first
   const now = new Date();
   const y = now.getFullYear(), m = now.getMonth();
   const daysInMonth = new Date(y, m+1, 0).getDate();
+  const firstOfMonth = new Date(y, m, 1);
+  const leadBlanks = (firstOfMonth.getDay()+6) % 7; // Mon=0 ... Sun=6
+
+  const wdWrap = document.getElementById('calWeekdays');
+  const wdNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  wdWrap.innerHTML = wdNames.map(d=>`<span class="${d==='Sun'?'sun':''}">${d}</span>`).join('');
+
   const cal = document.getElementById('calGrid');
   let cells = '';
+  for (let i=0; i<leadBlanks; i++) cells += `<div></div>`;
   for (let d=1; d<=daysInMonth; d++){
     const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     if (ds > todayStr()) break;
@@ -1334,8 +1367,9 @@ function renderAdmin(){
       <td>${t.link ? `<a href="${escapeAttr(t.link)}" target="_blank" rel="noopener">🔗</a>` : '—'}</td>
       <td><select data-rate="${t.id}"><option value="">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}" ${t.quality_rating==n?'selected':''}>${n}</option>`).join('')}</select></td>
       <td><input type="text" placeholder="Add a note…" value="${escapeAttr(t.admin_comment||'')}" style="width:150px;" data-comment="${t.id}"></td>
+      <td><button class="ci-del" data-del-admintask="${t.id}" title="Delete task">✕</button></td>
     </tr>`;
-  }).join('') : `<tr><td colspan="8" class="empty">No task activity yet.</td></tr>`;
+  }).join('') : `<tr><td colspan="9" class="empty">No task activity yet.</td></tr>`;
   reviewBody.querySelectorAll('[data-rate]').forEach(sel=>{
     sel.addEventListener('change', async (e)=>{
       await updateTask(e.target.dataset.rate, { quality_rating: e.target.value ? parseInt(e.target.value) : null });
@@ -1344,6 +1378,11 @@ function renderAdmin(){
   reviewBody.querySelectorAll('[data-comment]').forEach(inp=>{
     inp.addEventListener('change', async (e)=>{
       await updateTask(e.target.dataset.comment, { admin_comment: e.target.value.trim() || null });
+    });
+  });
+  reviewBody.querySelectorAll('[data-del-admintask]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if (confirm('Delete this task?')) await deleteTask(btn.dataset.delAdmintask);
     });
   });
 }
