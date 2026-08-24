@@ -241,6 +241,11 @@
       <button class="btn" type="submit">Add Task</button>
     </form>
 
+    <div class="card" id="carriedOverCard" style="display:none;margin-bottom:18px;">
+      <div class="subhead" style="margin-top:0;color:var(--warning);">Carried Over — Not Yet Completed</div>
+      <div id="carriedOverList"></div>
+    </div>
+
     <div class="card" id="taskListCard">
       <div id="taskList"></div>
     </div>
@@ -754,16 +759,13 @@ function switchTab(tab){
 }
 
 /* ====================== Render: My Tasks ====================== */
-function renderTasks(){
-  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  const myTasks = tasks.filter(t => t.employee_id === (currentUser && currentUser.id) && t.task_date === todayStr());
-  const list = document.getElementById('taskList');
-  if (!myTasks.length){ list.innerHTML = '<div class="empty">No tasks added yet today — add your first one above.</div>'; return; }
-  list.innerHTML = myTasks.map(t => `
+function taskRowHtml(t, showDate){
+  return `
     <div class="task-row">
       <div class="task-main">
         <div class="task-title ${t.status==='completed'?'done':''}">${escapeHtml(t.title)}</div>
         <span class="tag">${t.category}</span>
+        ${showDate ? `<span style="margin-left:8px;font-size:11.5px;color:var(--muted);">${t.task_date}</span>` : ''}
         ${t.link ? `<a href="${escapeAttr(t.link)}" target="_blank" rel="noopener" style="margin-left:8px;font-size:12px;color:var(--navy);">🔗 View</a>` : ''}
         ${t.admin_comment ? `<div style="margin-top:6px;font-size:12.5px;color:var(--muted);background:#FCFBF9;border-left:2px solid var(--gold);padding:6px 10px;border-radius:4px;">Admin note: ${escapeHtml(t.admin_comment)}</div>` : ''}
       </div>
@@ -774,19 +776,44 @@ function renderTasks(){
         <button class="ci-del" data-del-task="${t.id}" title="Delete task">✕</button>
       </div>
     </div>
-  `).join('');
-  document.querySelectorAll('[data-del-task]').forEach(btn=>{
+  `;
+}
+function attachTaskRowHandlers(container){
+  container.querySelectorAll('[data-del-task]').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       if (confirm('Delete this task?')) await deleteTask(btn.dataset.delTask);
     });
   });
-  document.querySelectorAll('.pctSlider').forEach(sl=>{
+  container.querySelectorAll('.pctSlider').forEach(sl=>{
     sl.addEventListener('change', async (e)=>{
       const pct = parseInt(e.target.value);
       const status = pct===100 ? 'completed' : (pct>0 ? 'in_progress' : 'pending');
       await updateTask(e.target.dataset.id, { completion_pct: pct, status });
     });
   });
+}
+function renderTasks(){
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  if (!currentUser) return;
+
+  const carried = tasks.filter(t => t.employee_id === currentUser.id && t.task_date < todayStr() && t.status !== 'completed')
+    .sort((a,b)=> a.task_date < b.task_date ? -1 : 1);
+  const carriedCard = document.getElementById('carriedOverCard');
+  const carriedList = document.getElementById('carriedOverList');
+  if (carried.length){
+    carriedCard.style.display = 'block';
+    carriedList.innerHTML = carried.map(t=>taskRowHtml(t, true)).join('');
+    attachTaskRowHandlers(carriedList);
+  } else {
+    carriedCard.style.display = 'none';
+    carriedList.innerHTML = '';
+  }
+
+  const myTasks = tasks.filter(t => t.employee_id === currentUser.id && t.task_date === todayStr());
+  const list = document.getElementById('taskList');
+  if (!myTasks.length){ list.innerHTML = '<div class="empty">No tasks added yet today — add your first one above.</div>'; return; }
+  list.innerHTML = myTasks.map(t=>taskRowHtml(t, false)).join('');
+  attachTaskRowHandlers(list);
 }
 
 document.getElementById('taskForm').addEventListener('submit', async (e)=>{
