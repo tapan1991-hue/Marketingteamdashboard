@@ -55,7 +55,16 @@
   button.btn.small{padding:6px 12px;font-size:12.5px;}
 
   /* Task list */
-  .task-row{display:flex;align-items:center;gap:14px;padding:14px 4px;border-bottom:1px solid var(--border);}
+  .task-row{display:flex;align-items:center;gap:14px;padding:14px 10px;border-bottom:1px solid var(--border);border-left:3px solid transparent;}
+  .task-row.priority-high{border-left-color:var(--danger);}
+  .task-row.priority-medium{border-left-color:var(--warning);}
+  .task-row.priority-low{border-left-color:var(--border);}
+  .stale-badge{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;color:var(--danger);background:var(--danger-bg);padding:2px 8px;border-radius:20px;}
+  .auto-badge{display:inline-block;margin-left:8px;font-size:11px;font-weight:600;color:var(--navy);background:#E7EEFB;padding:2px 8px;border-radius:20px;}
+  .template-chips{display:flex;gap:8px;flex-wrap:wrap;}
+  .tpl-chip{display:inline-flex;align-items:center;gap:6px;background:#FCFBF9;border:1px solid var(--border);border-radius:20px;padding:6px 8px 6px 14px;font-size:13px;}
+  .tpl-chip button.add{background:var(--navy);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;}
+  .tpl-chip button.del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0 2px;}
   .task-row:last-child{border-bottom:none;}
   .task-main{flex:1;min-width:0;}
   .task-title{font-weight:600;font-size:14.5px;}
@@ -162,10 +171,12 @@
   .overall-pill.in_progress{background:var(--warning-bg);color:var(--warning);}
   .overall-pill.ready{background:#E7EEFB;color:var(--navy);}
   .overall-pill.posted{background:var(--success-bg);color:var(--success);}
-  .stage-row{display:grid;grid-template-columns:110px 1fr 90px;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--border);}
+  .stage-row{display:grid;grid-template-columns:100px 1fr 115px 90px;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--border);}
   .stage-row:first-of-type{border-top:none;}
   .stage-label{font-size:12.5px;font-weight:600;color:var(--muted);text-transform:capitalize;}
   .stage-row select{width:100%;padding:6px 8px;font-size:13px;}
+  .stage-row input[type=date]{width:100%;padding:6px 6px;font-size:12px;}
+  .stage-due.overdue{color:var(--danger);font-weight:700;}
   .stage-done-btn{padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);white-space:nowrap;}
   .stage-done-btn.done{background:var(--success-bg);border-color:var(--success);color:var(--success);}
   .ci-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;}
@@ -225,6 +236,30 @@
     <h2>Today's Tasks</h2>
     <p class="section-sub" id="todayDate"></p>
 
+    <div class="card" style="margin-bottom:18px;">
+      <div class="subhead" style="margin-top:0;">Quick Add (Recurring Tasks)</div>
+      <div class="template-chips" id="templateChips"></div>
+      <form id="templateForm" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+        <input type="text" id="newTplTitle" placeholder="Save a recurring task…" required style="flex:1;min-width:160px;">
+        <select id="newTplCategory">
+          <option value="content">Content</option>
+          <option value="social">Social</option>
+          <option value="ads">Ads</option>
+          <option value="seo">SEO</option>
+          <option value="client">Client</option>
+          <option value="design">Design/Edit</option>
+          <option value="strategy">Strategy</option>
+          <option value="other">Other</option>
+        </select>
+        <select id="newTplPriority">
+          <option value="high">High</option>
+          <option value="medium" selected>Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <button class="btn ghost small" type="submit">+ Save as Template</button>
+      </form>
+    </div>
+
     <form class="task-form" id="taskForm">
       <input type="text" id="newTaskTitle" placeholder="Add a task for today…" required>
       <select id="newTaskCategory">
@@ -236,6 +271,11 @@
         <option value="design">Design/Edit</option>
         <option value="strategy">Strategy</option>
         <option value="other">Other</option>
+      </select>
+      <select id="newTaskPriority">
+        <option value="high">High Priority</option>
+        <option value="medium" selected>Medium Priority</option>
+        <option value="low">Low Priority</option>
       </select>
       <input type="url" id="newTaskLink" placeholder="Link (optional)" style="min-width:160px;">
       <button class="btn" type="submit">Add Task</button>
@@ -331,6 +371,7 @@
   <section id="tab-content" style="display:none;">
     <h2>Content Calendar</h2>
     <p class="section-sub">Instagram &amp; LinkedIn posts — scripting, shooting, editing, and posting tracked per person.</p>
+    <p class="note" style="margin-top:-8px;margin-bottom:14px;">Marking a stage "Done" auto-logs it as a completed task for whoever's assigned — it counts toward their task target too, so nothing gets tracked twice.</p>
 
     <div class="card">
       <div class="subhead" style="margin-top:0;">New Content Item</div>
@@ -347,6 +388,11 @@
         <div class="stage-assign-grid" id="stageAssignGrid"></div>
         <button class="btn" type="submit" style="margin-top:12px;">+ Add to Calendar</button>
       </form>
+    </div>
+
+    <div class="card" style="margin-top:18px;" id="workloadCard">
+      <div class="subhead" style="margin-top:0;">Team Workload — Open Stages</div>
+      <div class="leave-cards" id="workloadCards"></div>
     </div>
 
     <div class="card" style="margin-top:18px;">
@@ -519,6 +565,7 @@ let demoLeaveRequests = [];
 let demoContentItems = [];
 let demoContentStages = [];
 let demoTargetOverrides = [];
+let demoTaskTemplates = [];
 
 let currentUser = null;
 let employees = [];
@@ -529,6 +576,7 @@ let leaveRequests = [];
 let contentItems = [];
 let contentStages = [];
 let targetOverrides = [];
+let taskTemplates = [];
 let activeTab = "tasks";
 let contentPlatformFilter = "all";
 
@@ -545,12 +593,12 @@ async function loadTasks(){
   if (DEMO_MODE){ tasks = demoTasks; return; }
   tasks = await pgSelect('tasks', 'created_at.desc');
 }
-async function addTask(title, category, link){
+async function addTask(title, category, link, priority){
   if (DEMO_MODE){
-    demoTasks.unshift({ id:'t'+(idCounter++), employee_id:currentUser.id, title, category, link: link||null, admin_comment:null, task_date:todayStr(), status:'pending', completion_pct:0, quality_rating:null, created_at:new Date().toISOString() });
+    demoTasks.unshift({ id:'t'+(idCounter++), employee_id:currentUser.id, title, category, link: link||null, admin_comment:null, priority: priority||'medium', task_date:todayStr(), status:'pending', completion_pct:0, quality_rating:null, created_at:new Date().toISOString() });
     await refreshAll(); return;
   }
-  await pgInsert('tasks', { employee_id: currentUser.id, title, category, task_date: todayStr(), link: link||null });
+  await pgInsert('tasks', { employee_id: currentUser.id, title, category, task_date: todayStr(), link: link||null, priority: priority||'medium' });
   await refreshAll();
 }
 async function updateTask(id, fields){
@@ -620,12 +668,19 @@ async function markAttendance(employeeId, dateStr, status){
   if (DEMO_MODE){
     const existing = demoAttendance.find(a=>a.employee_id===employeeId && a.att_date===dateStr);
     if (existing) existing.status = status;
-    else demoAttendance.push({ id:'a'+(idCounter++), employee_id:employeeId, att_date:dateStr, status });
+    else demoAttendance.push({ id:'a'+(idCounter++), employee_id:employeeId, att_date:dateStr, status, check_in: new Date().toISOString(), check_out: null });
     await refreshAll(); return;
   }
   const existing = attendance.find(a=>a.employee_id===employeeId && a.att_date===dateStr);
   if (existing) await pgUpdate('attendance', existing.id, { status });
-  else await pgInsert('attendance', { employee_id: employeeId, att_date: dateStr, status });
+  else await pgInsert('attendance', { employee_id: employeeId, att_date: dateStr, status, check_in: new Date().toISOString() });
+  await refreshAll();
+}
+async function checkOutAttendance(employeeId, dateStr){
+  const existing = attendance.find(a=>a.employee_id===employeeId && a.att_date===dateStr);
+  if (!existing) return;
+  if (DEMO_MODE){ existing.check_out = new Date().toISOString(); await refreshAll(); return; }
+  await pgUpdate('attendance', existing.id, { check_out: new Date().toISOString() });
   await refreshAll();
 }
 
@@ -718,6 +773,27 @@ async function deleteTargetOverride(id){
   await refreshAll();
 }
 
+async function loadTaskTemplates(){
+  if (DEMO_MODE){ taskTemplates = demoTaskTemplates; return; }
+  taskTemplates = await pgSelect('task_templates', 'created_at.asc');
+}
+async function addTaskTemplate(employeeId, title, category, priority){
+  if (DEMO_MODE){
+    demoTaskTemplates.push({ id:'tt'+(idCounter++), employee_id:employeeId, title, category, priority });
+    await refreshAll(); return;
+  }
+  await pgInsert('task_templates', { employee_id: employeeId, title, category, priority });
+  await refreshAll();
+}
+async function deleteTaskTemplate(id){
+  if (DEMO_MODE){
+    demoTaskTemplates = demoTaskTemplates.filter(t=>t.id!==id);
+    await refreshAll(); return;
+  }
+  await pgDelete('task_templates', id);
+  await refreshAll();
+}
+
 async function refreshAll(){
   await loadEmployees();
   await loadTasks();
@@ -727,6 +803,7 @@ async function refreshAll(){
   await loadContentItems();
   await loadContentStages();
   await loadTargetOverrides();
+  await loadTaskTemplates();
   render();
 }
 
@@ -760,16 +837,25 @@ function switchTab(tab){
 
 /* ====================== Render: My Tasks ====================== */
 function taskRowHtml(t, showDate){
+  const priority = t.priority || 'medium';
+  const stale = showDate && workingDaysSince(t.task_date) > 3;
   return `
-    <div class="task-row">
+    <div class="task-row priority-${priority} ${stale?'stale':''}">
       <div class="task-main">
         <div class="task-title ${t.status==='completed'?'done':''}">${escapeHtml(t.title)}</div>
         <span class="tag">${t.category}</span>
         ${showDate ? `<span style="margin-left:8px;font-size:11.5px;color:var(--muted);">${t.task_date}</span>` : ''}
+        ${stale ? `<span class="stale-badge">⚠ Stale · ${workingDaysSince(t.task_date)} working days</span>` : ''}
+        ${t.source==='content_calendar' ? `<span class="auto-badge">⚙ Auto-logged from Content Calendar</span>` : ''}
         ${t.link ? `<a href="${escapeAttr(t.link)}" target="_blank" rel="noopener" style="margin-left:8px;font-size:12px;color:var(--navy);">🔗 View</a>` : ''}
         ${t.admin_comment ? `<div style="margin-top:6px;font-size:12.5px;color:var(--muted);background:#FCFBF9;border-left:2px solid var(--gold);padding:6px 10px;border-radius:4px;">Admin note: ${escapeHtml(t.admin_comment)}</div>` : ''}
       </div>
       <div class="task-controls">
+        <select data-priority="${t.id}" style="width:90px;">
+          <option value="high" ${priority==='high'?'selected':''}>High</option>
+          <option value="medium" ${priority==='medium'?'selected':''}>Medium</option>
+          <option value="low" ${priority==='low'?'selected':''}>Low</option>
+        </select>
         <input type="range" min="0" max="100" step="10" value="${t.completion_pct}" data-id="${t.id}" class="pctSlider">
         <span class="pct-label">${t.completion_pct}%</span>
         <span class="status-badge status-${t.status}">${t.status.replace('_',' ')}</span>
@@ -791,13 +877,33 @@ function attachTaskRowHandlers(container){
       await updateTask(e.target.dataset.id, { completion_pct: pct, status });
     });
   });
+  container.querySelectorAll('[data-priority]').forEach(sel=>{
+    sel.addEventListener('change', async (e)=>{
+      await updateTask(e.target.dataset.priority, { priority: e.target.value });
+    });
+  });
+}
+const PRIORITY_RANK = { high:0, medium:1, low:2 };
+function workingDaysSince(dateStr){
+  let count = 0;
+  const d = new Date(dateStr);
+  const today = new Date(todayStr());
+  while (d < today){
+    d.setDate(d.getDate()+1);
+    if (d.getDay() !== 0) count++;
+  }
+  return count;
 }
 function renderTasks(){
   document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
   if (!currentUser) return;
+  renderTemplates();
 
   const carried = tasks.filter(t => t.employee_id === currentUser.id && t.task_date < todayStr() && t.status !== 'completed')
-    .sort((a,b)=> a.task_date < b.task_date ? -1 : 1);
+    .sort((a,b)=> {
+      const pr = (PRIORITY_RANK[a.priority||'medium']) - (PRIORITY_RANK[b.priority||'medium']);
+      return pr !== 0 ? pr : (a.task_date < b.task_date ? -1 : 1);
+    });
   const carriedCard = document.getElementById('carriedOverCard');
   const carriedList = document.getElementById('carriedOverList');
   if (carried.length){
@@ -809,20 +915,54 @@ function renderTasks(){
     carriedList.innerHTML = '';
   }
 
-  const myTasks = tasks.filter(t => t.employee_id === currentUser.id && t.task_date === todayStr());
+  const myTasks = tasks.filter(t => t.employee_id === currentUser.id && t.task_date === todayStr())
+    .sort((a,b)=> (PRIORITY_RANK[a.priority||'medium']) - (PRIORITY_RANK[b.priority||'medium']));
   const list = document.getElementById('taskList');
   if (!myTasks.length){ list.innerHTML = '<div class="empty">No tasks added yet today — add your first one above.</div>'; return; }
   list.innerHTML = myTasks.map(t=>taskRowHtml(t, false)).join('');
   attachTaskRowHandlers(list);
 }
 
+function renderTemplates(){
+  if (!currentUser) return;
+  const mine = taskTemplates.filter(t=>t.employee_id===currentUser.id);
+  const wrap = document.getElementById('templateChips');
+  wrap.innerHTML = mine.length ? mine.map(t=>`
+    <span class="tpl-chip">
+      ${escapeHtml(t.title)} <span style="color:var(--muted);font-size:11px;">(${t.category})</span>
+      <button class="add" data-add-tpl="${t.id}">+ Add</button>
+      <button class="del" data-del-tpl="${t.id}" title="Remove template">✕</button>
+    </span>`).join('') : `<span style="color:var(--muted);font-size:13px;">No saved templates yet — save one below for tasks you repeat often.</span>`;
+  wrap.querySelectorAll('[data-add-tpl]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const t = taskTemplates.find(x=>x.id===btn.dataset.addTpl);
+      if (t) await addTask(t.title, t.category, null, t.priority);
+    });
+  });
+  wrap.querySelectorAll('[data-del-tpl]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if (confirm('Remove this template?')) await deleteTaskTemplate(btn.dataset.delTpl);
+    });
+  });
+}
+document.getElementById('templateForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const title = document.getElementById('newTplTitle').value.trim();
+  const category = document.getElementById('newTplCategory').value;
+  const priority = document.getElementById('newTplPriority').value;
+  if (!title || !currentUser) return;
+  await addTaskTemplate(currentUser.id, title, category, priority);
+  e.target.reset();
+});
+
 document.getElementById('taskForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const title = document.getElementById('newTaskTitle').value.trim();
   const category = document.getElementById('newTaskCategory').value;
+  const priority = document.getElementById('newTaskPriority').value;
   const link = document.getElementById('newTaskLink').value.trim();
   if (!title || !currentUser) return;
-  await addTask(title, category, link);
+  await addTask(title, category, link, priority);
   document.getElementById('newTaskTitle').value = '';
   document.getElementById('newTaskLink').value = '';
 });
@@ -862,9 +1002,18 @@ function renderAttendance(){
     noteEl.innerHTML = `<div class="on-leave-note">You're on approved ${todayLeave.leave_type} leave today.</div>`;
     btnWrap.innerHTML = '';
   } else {
-    noteEl.innerHTML = '';
     const todayAtt = attendance.find(a=>a.employee_id===currentUser.id && a.att_date===todayStr());
     const cur = todayAtt ? todayAtt.status : null;
+    const fmtTime = (iso) => iso ? new Date(iso).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}) : null;
+    if (todayAtt && todayAtt.check_in){
+      const parts = [`Checked in: ${fmtTime(todayAtt.check_in)}`];
+      if (todayAtt.check_out) parts.push(`Checked out: ${fmtTime(todayAtt.check_out)}`);
+      noteEl.innerHTML = `<div class="on-leave-note" style="background:#E7EEFB;color:var(--navy);">${parts.join(' · ')}${!todayAtt.check_out?` &nbsp;<button class="btn small" id="checkOutBtn" style="margin-left:6px;">Check Out</button>`:''}</div>`;
+      const coBtn = document.getElementById('checkOutBtn');
+      if (coBtn) coBtn.addEventListener('click', async ()=> await checkOutAttendance(currentUser.id, todayStr()));
+    } else {
+      noteEl.innerHTML = '';
+    }
     const opts = [['present','Present'],['half_day','Half Day'],['wfh','WFH'],['absent','Absent']];
     btnWrap.innerHTML = opts.map(([val,lbl])=>`<button type="button" class="att-btn ${val} ${cur===val?'active':''}" data-att="${val}">${lbl}</button>`).join('');
     btnWrap.querySelectorAll('[data-att]').forEach(b=>{
@@ -890,7 +1039,13 @@ function renderAttendance(){
     const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     if (ds > todayStr()) break;
     const st = effectiveStatus(currentUser.id, ds);
-    cells += `<div class="cal-day ${st}" title="${ds}">${d}</div>`;
+    const attRec = attendance.find(a=>a.employee_id===currentUser.id && a.att_date===ds);
+    let tip = ds;
+    if (attRec && attRec.check_in){
+      tip += ` · in ${new Date(attRec.check_in).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+      if (attRec.check_out) tip += ` – out ${new Date(attRec.check_out).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+    }
+    cells += `<div class="cal-day ${st}" title="${tip}">${d}</div>`;
   }
   cal.innerHTML = cells;
 
@@ -1034,6 +1189,25 @@ function overallContentStatus(itemId){
   return 'in_progress';
 }
 const STATUS_LABELS = { not_started:'Not started', in_progress:'In progress', ready:'Ready to post', posted:'Posted' };
+const STAGE_TO_CATEGORY = { scripting:'content', shooting:'content', editing:'design', approval:'other', posting:'social' };
+
+async function createLinkedTask(item, stage){
+  const title = `[${item.platform}] ${item.title} — ${stage.stage_name}`;
+  const category = STAGE_TO_CATEGORY[stage.stage_name] || 'other';
+  const fields = { employee_id: stage.assignee_id, title, category, task_date: todayStr(), status:'completed', completion_pct:100, priority:'medium', source:'content_calendar' };
+  if (DEMO_MODE){
+    const newTask = { id:'t'+(idCounter++), admin_comment:null, link:null, quality_rating:null, created_at:new Date().toISOString(), ...fields };
+    demoTasks.unshift(newTask);
+    return newTask.id;
+  }
+  const inserted = await pgInsert('tasks', fields);
+  return inserted && inserted[0] ? inserted[0].id : null;
+}
+async function removeLinkedTask(taskId){
+  if (!taskId) return;
+  if (DEMO_MODE){ demoTasks = demoTasks.filter(t=>t.id!==taskId); return; }
+  await pgDelete('tasks', taskId);
+}
 
 function renderContentList(){
   const list = document.getElementById('contentList');
@@ -1046,7 +1220,8 @@ function renderContentList(){
   list.innerHTML = items.map(item=>{
     const stages = contentStages.filter(s=>s.content_item_id===item.id);
     const status = overallContentStatus(item.id);
-    const overdue = item.target_date && item.target_date < todayStr() && status !== 'posted';
+    const overdue = (item.target_date && item.target_date < todayStr() && status !== 'posted')
+      || stages.some(s => s.due_date && !s.done && s.due_date < todayStr());
     const opts = employees.filter(e=>e.active).map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
     return `
     <div class="content-item ${overdue?'overdue':''}">
@@ -1064,10 +1239,12 @@ function renderContentList(){
       ${CONTENT_STAGE_NAMES.map(stageName=>{
         const s = stages.find(x=>x.stage_name===stageName);
         if (!s) return '';
+        const stageOverdue = s.due_date && !s.done && s.due_date < todayStr();
         return `
         <div class="stage-row">
-          <div class="stage-label">${stageName}</div>
+          <div class="stage-label">${stageName}${stageOverdue?' <span style="color:var(--danger);">⚠</span>':''}</div>
           <select data-assign-stage="${s.id}"><option value="">Unassigned</option>${opts.replace(`value="${s.assignee_id}"`, `value="${s.assignee_id}" selected`)}</select>
+          <input type="date" class="stage-due ${stageOverdue?'overdue':''}" value="${s.due_date||''}" data-due-stage="${s.id}" title="Stage due date">
           <button class="stage-done-btn ${s.done?'done':''}" data-toggle-stage="${s.id}" data-cur="${s.done}">${s.done?'✓ Done':'Mark Done'}</button>
         </div>`;
       }).join('')}
@@ -1079,10 +1256,27 @@ function renderContentList(){
       await updateContentStage(e.target.dataset.assignStage, { assignee_id: e.target.value || null });
     });
   });
+  list.querySelectorAll('[data-due-stage]').forEach(inp=>{
+    inp.addEventListener('change', async (e)=>{
+      await updateContentStage(e.target.dataset.dueStage, { due_date: e.target.value || null });
+    });
+  });
   list.querySelectorAll('[data-toggle-stage]').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       const nowDone = btn.dataset.cur !== 'true';
-      await updateContentStage(btn.dataset.toggleStage, { done: nowDone, done_at: nowDone ? new Date().toISOString() : null });
+      const stage = contentStages.find(s=>s.id===btn.dataset.toggleStage);
+      if (!stage) return;
+      if (nowDone){
+        let linkedTaskId = stage.linked_task_id || null;
+        if (stage.assignee_id && !linkedTaskId){
+          const item = contentItems.find(i=>i.id===stage.content_item_id);
+          if (item) linkedTaskId = await createLinkedTask(item, stage);
+        }
+        await updateContentStage(stage.id, { done: true, done_at: new Date().toISOString(), linked_task_id: linkedTaskId });
+      } else {
+        if (stage.linked_task_id) await removeLinkedTask(stage.linked_task_id);
+        await updateContentStage(stage.id, { done: false, done_at: null, linked_task_id: null });
+      }
     });
   });
   list.querySelectorAll('[data-del-content]').forEach(btn=>{
@@ -1092,9 +1286,22 @@ function renderContentList(){
   });
 }
 
+function renderWorkload(){
+  const wrap = document.getElementById('workloadCards');
+  const active = employees.filter(e=>e.active && !e.is_admin);
+  wrap.innerHTML = active.map(emp=>{
+    const openStages = contentStages.filter(s => s.assignee_id===emp.id && !s.done);
+    const overdueCount = openStages.filter(s => s.due_date && s.due_date < todayStr()).length;
+    return `<div class="leave-card">
+      <div class="num" style="${overdueCount>0?'color:var(--danger);':''}">${openStages.length}</div>
+      <div class="lbl">${emp.name} — open stages${overdueCount>0?` (${overdueCount} overdue)`:''}</div>
+    </div>`;
+  }).join('');
+}
 function renderContent(){
   renderStageAssignGrid();
   renderContentList();
+  renderWorkload();
 }
 
 function fmtDate(d){ return d.toISOString().slice(0,10); }
@@ -1187,6 +1394,13 @@ function renderDashboard(){
     const kraTotal = weightedKraScore(emp.id);
     const kraColor = kraTotal.score===null ? 'var(--muted)' : kraTotal.score>=80 ? 'var(--success)' : kraTotal.score>=60 ? 'var(--gold)' : 'var(--danger)';
     const onLeaveToday = approvedLeaveOn(emp.id, todayStr());
+    const LATE_CUTOFF_MIN = 10*60 + 30; // 10:30am
+    const lateCount = attendance.filter(a => {
+      if (a.employee_id !== emp.id || !a.check_in) return false;
+      if (new Date(a.att_date) < monthStart) return false;
+      const t = new Date(a.check_in);
+      return (t.getHours()*60 + t.getMinutes()) > LATE_CUTOFF_MIN;
+    }).length;
 
     return `
     <div class="card emp-card">
@@ -1204,6 +1418,7 @@ function renderDashboard(){
       <div class="stat-line"><span>Weekly completion</span><b>${wkPct}%</b></div>
       <div class="stat-line"><span>Monthly completion</span><b>${moPct}%</b></div>
       ${wkPct<70 && !onLeaveToday ? `<div class="flag">Behind on weekly target</div>` : ''}
+      ${lateCount>=3 ? `<div class="flag">Late check-in ${lateCount}x this month (after 10:30am)</div>` : ''}
 
       ${kraList.length ? `
       <div class="subblock">
