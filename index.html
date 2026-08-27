@@ -60,6 +60,11 @@
   .task-row.priority-medium{border-left-color:var(--warning);}
   .task-row.priority-low{border-left-color:var(--border);}
   .stale-badge{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;color:var(--danger);background:var(--danger-bg);padding:2px 8px;border-radius:20px;}
+  .day-group{margin-bottom:6px;}
+  .day-group:not(:first-child){margin-top:8px;}
+  .day-group-header{display:flex;align-items:baseline;gap:8px;padding:10px 4px 6px;font-size:14px;font-weight:700;color:var(--navy);border-bottom:2px solid var(--border);margin-bottom:2px;}
+  .day-group-header .dg-date{font-weight:400;color:var(--muted);font-size:12px;}
+  .day-group-header.today{color:var(--gold);}
   .auto-badge{display:inline-block;margin-left:8px;font-size:11px;font-weight:600;color:var(--navy);background:#E7EEFB;padding:2px 8px;border-radius:20px;}
   .template-chips{display:flex;gap:8px;flex-wrap:wrap;}
   .tpl-chip{display:inline-flex;align-items:center;gap:6px;background:#FCFBF9;border:1px solid var(--border);border-radius:20px;padding:6px 8px 6px 14px;font-size:13px;}
@@ -281,11 +286,6 @@
       <button class="btn" type="submit">Add Task</button>
     </form>
 
-    <div class="card" id="carriedOverCard" style="display:none;margin-bottom:18px;">
-      <div class="subhead" style="margin-top:0;color:var(--warning);">Carried Over — Not Yet Completed</div>
-      <div id="carriedOverList"></div>
-    </div>
-
     <div class="card" id="taskListCard">
       <div id="taskList"></div>
     </div>
@@ -495,10 +495,14 @@ const pgHeaders = {
   "Authorization": "Bearer " + SUPABASE_ANON_KEY,
   "Content-Type": "application/json"
 };
+function reportDbError(action, table, detail){
+  console.error(`${action} on ${table} failed:`, detail);
+  alert(`⚠ Couldn't ${action} — the change may not have saved.\n\nPlease check your internet connection and try again. If this keeps happening, let Tapan know.`);
+}
 async function pgSelect(table, order){
   const url = REST_BASE + table + "?select=*" + (order ? "&order="+order : "");
   const res = await fetch(url, { headers: pgHeaders });
-  if (!res.ok){ console.error(await res.text()); return []; }
+  if (!res.ok){ reportDbError('load data', table, await res.text()); return []; }
   return res.json();
 }
 async function pgInsert(table, body){
@@ -507,7 +511,7 @@ async function pgInsert(table, body){
     headers: { ...pgHeaders, "Prefer": "return=representation" },
     body: JSON.stringify(body)
   });
-  if (!res.ok){ console.error(await res.text()); return null; }
+  if (!res.ok){ reportDbError('save', table, await res.text()); return null; }
   return res.json();
 }
 async function pgUpdate(table, id, fields){
@@ -516,12 +520,12 @@ async function pgUpdate(table, id, fields){
     headers: { ...pgHeaders, "Prefer": "return=representation" },
     body: JSON.stringify(fields)
   });
-  if (!res.ok){ console.error(await res.text()); return null; }
+  if (!res.ok){ reportDbError('update', table, await res.text()); return null; }
   return res.json();
 }
 async function pgDelete(table, id){
   const res = await fetch(REST_BASE + table + "?id=eq." + id, { method: "DELETE", headers: pgHeaders });
-  if (!res.ok){ console.error(await res.text()); return false; }
+  if (!res.ok){ reportDbError('delete', table, await res.text()); return false; }
   return true;
 }
 
@@ -838,7 +842,7 @@ function switchTab(tab){
 /* ====================== Render: My Tasks ====================== */
 function taskRowHtml(t, showDate){
   const priority = t.priority || 'medium';
-  const stale = showDate && workingDaysSince(t.task_date) > 3;
+  const stale = t.status !== 'completed' && workingDaysSince(t.task_date) > 3;
   return `
     <div class="task-row priority-${priority} ${stale?'stale':''}">
       <div class="task-main">
@@ -899,27 +903,30 @@ function renderTasks(){
   if (!currentUser) return;
   renderTemplates();
 
-  const carried = tasks.filter(t => t.employee_id === currentUser.id && t.task_date < todayStr() && t.status !== 'completed')
-    .sort((a,b)=> {
-      const pr = (PRIORITY_RANK[a.priority||'medium']) - (PRIORITY_RANK[b.priority||'medium']);
-      return pr !== 0 ? pr : (a.task_date < b.task_date ? -1 : 1);
-    });
-  const carriedCard = document.getElementById('carriedOverCard');
-  const carriedList = document.getElementById('carriedOverList');
-  if (carried.length){
-    carriedCard.style.display = 'block';
-    carriedList.innerHTML = carried.map(t=>taskRowHtml(t, true)).join('');
-    attachTaskRowHandlers(carriedList);
-  } else {
-    carriedCard.style.display = 'none';
-    carriedList.innerHTML = '';
-  }
+  const HISTORY_DAYS = 14;
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - HISTORY_DAYS);
+  const cutoffStr = fmtDate(cutoff);
 
-  const myTasks = tasks.filter(t => t.employee_id === currentUser.id && t.task_date === todayStr())
-    .sort((a,b)=> (PRIORITY_RANK[a.priority||'medium']) - (PRIORITY_RANK[b.priority||'medium']));
+  const myTasks = tasks.filter(t => t.employee_id === currentUser.id);
+  const byDate = {};
+  myTasks.forEach(t => { (byDate[t.task_date] = byDate[t.task_date] || []).push(t); });
+
+  let dates = Object.keys(byDate).filter(d => d >= cutoffStr || byDate[d].some(t => t.status !== 'completed'));
+  if (!dates.includes(todayStr())) dates.push(todayStr());
+  dates.sort((a,b) => a < b ? 1 : -1); // descending, today first
+
   const list = document.getElementById('taskList');
-  if (!myTasks.length){ list.innerHTML = '<div class="empty">No tasks added yet today — add your first one above.</div>'; return; }
-  list.innerHTML = myTasks.map(t=>taskRowHtml(t, false)).join('');
+  list.innerHTML = dates.map(ds => {
+    const dayTasks = (byDate[ds] || []).sort((a,b) => (PRIORITY_RANK[a.priority||'medium']) - (PRIORITY_RANK[b.priority||'medium']));
+    const isToday = ds === todayStr();
+    const label = isToday ? 'Today' : new Date(ds).toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short' });
+    const pendingCount = dayTasks.filter(t => t.status !== 'completed').length;
+    return `
+    <div class="day-group">
+      <div class="day-group-header ${isToday?'today':''}">${label} <span class="dg-date">${ds}</span>${!isToday && pendingCount ? `<span class="stale-badge">${pendingCount} pending</span>` : ''}</div>
+      ${dayTasks.length ? dayTasks.map(t=>taskRowHtml(t, false)).join('') : `<div class="empty" style="padding:8px 4px;">${isToday?'No tasks added yet today — add your first one above.':'No tasks that day.'}</div>`}
+    </div>`;
+  }).join('');
   attachTaskRowHandlers(list);
 }
 
