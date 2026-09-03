@@ -61,6 +61,7 @@
   .task-row.priority-low{border-left-color:var(--border);}
   .stale-badge{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;color:var(--danger);background:var(--danger-bg);padding:2px 8px;border-radius:20px;}
   .co-badge{display:inline-block;margin-left:8px;font-size:11px;font-weight:600;color:#6B4E1F;background:var(--gold-soft);padding:2px 8px;border-radius:20px;}
+  .completed-time{font-size:11px;color:var(--success);font-weight:600;white-space:nowrap;}
   .task-edit-grid{display:grid;grid-template-columns:1fr 130px;gap:8px;width:100%;}
   .task-edit-grid input, .task-edit-grid select{width:100%;padding:8px 10px;}
   @media (max-width:700px){.task-edit-grid{grid-template-columns:1fr;}}
@@ -902,6 +903,7 @@ function taskRowHtml(t, showDate){
         <input type="range" min="0" max="100" step="10" value="${t.completion_pct}" data-id="${t.id}" class="pctSlider">
         <span class="pct-label">${t.completion_pct}%</span>
         <span class="status-badge status-${t.status}">${t.status.replace('_',' ')}</span>
+        ${t.status==='completed' && t.completed_at ? `<span class="completed-time">✓ ${fmtCompletedTime(t.completed_at)}</span>` : ''}
         <button class="ci-del" data-edit-task="${t.id}" title="Edit task">✏️</button>
         <button class="ci-del" data-del-task="${t.id}" title="Delete task">✕</button>
       </div>
@@ -918,7 +920,9 @@ function attachTaskRowHandlers(container){
     sl.addEventListener('change', async (e)=>{
       const pct = parseInt(e.target.value);
       const status = pct===100 ? 'completed' : (pct>0 ? 'in_progress' : 'pending');
-      await updateTask(e.target.dataset.id, { completion_pct: pct, status });
+      const fields = { completion_pct: pct, status };
+      fields.completed_at = status === 'completed' ? new Date().toISOString() : null;
+      await updateTask(e.target.dataset.id, fields);
     });
   });
   container.querySelectorAll('[data-priority]').forEach(sel=>{
@@ -1284,7 +1288,7 @@ const STAGE_TO_CATEGORY = { scripting:'content', shooting:'content', editing:'de
 async function createLinkedTask(item, stage){
   const title = `[${item.platform}] ${item.title} — ${stage.stage_name}`;
   const category = STAGE_TO_CATEGORY[stage.stage_name] || 'other';
-  const fields = { employee_id: stage.assignee_id, title, category, task_date: todayStr(), status:'completed', completion_pct:100, priority:'medium', source:'content_calendar' };
+  const fields = { employee_id: stage.assignee_id, title, category, task_date: todayStr(), status:'completed', completion_pct:100, priority:'medium', source:'content_calendar', completed_at: new Date().toISOString() };
   if (DEMO_MODE){
     const newTask = { id:'t'+(idCounter++), admin_comment:null, link:null, quality_rating:null, created_at:new Date().toISOString(), ...fields };
     demoTasks.unshift(newTask);
@@ -1395,6 +1399,12 @@ function renderContent(){
 }
 
 function fmtDate(d){ return d.toISOString().slice(0,10); }
+function fmtCompletedTime(iso){
+  const d = new Date(iso);
+  const sameDay = fmtDate(d) === todayStr();
+  const time = d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  return sameDay ? time : `${d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})}, ${time}`;
+}
 function weekStartOf(dateStr){ const d = new Date(dateStr); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); return fmtDate(d); }
 function monthStartOf(dateStr){ const d = new Date(dateStr); d.setDate(1); return fmtDate(d); }
 function effectiveTarget(empId, periodType, defaultTarget, periodStartStr){
@@ -1698,7 +1708,7 @@ function renderAdmin(){
       <td>${emp?emp.name:'—'}${coEmp?` <span style="color:var(--muted);font-size:11px;">+ ${coEmp.name}</span>`:''}</td>
       <td>${escapeHtml(t.title)}</td>
       <td>${t.task_date}</td>
-      <td><span class="status-badge status-${t.status}">${t.status.replace('_',' ')}</span></td>
+      <td><span class="status-badge status-${t.status}">${t.status.replace('_',' ')}</span>${t.status==='completed'&&t.completed_at?`<div class="completed-time" style="margin-top:3px;">✓ ${fmtCompletedTime(t.completed_at)}</div>`:''}</td>
       <td>${t.completion_pct}%</td>
       <td>${t.link ? `<a href="${escapeAttr(t.link)}" target="_blank" rel="noopener">🔗</a>` : '—'}</td>
       <td><select data-rate="${t.id}"><option value="">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}" ${t.quality_rating==n?'selected':''}>${n}</option>`).join('')}</select></td>
