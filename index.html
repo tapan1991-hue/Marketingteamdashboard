@@ -60,6 +60,11 @@
   .task-row.priority-medium{border-left-color:var(--warning);}
   .task-row.priority-low{border-left-color:var(--border);}
   .stale-badge{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;color:var(--danger);background:var(--danger-bg);padding:2px 8px;border-radius:20px;}
+  .co-badge{display:inline-block;margin-left:8px;font-size:11px;font-weight:600;color:#6B4E1F;background:var(--gold-soft);padding:2px 8px;border-radius:20px;}
+  .task-edit-grid{display:grid;grid-template-columns:1fr 130px;gap:8px;width:100%;}
+  .task-edit-grid input, .task-edit-grid select{width:100%;padding:8px 10px;}
+  @media (max-width:700px){.task-edit-grid{grid-template-columns:1fr;}}
+  .edit-row{flex-direction:column;align-items:stretch;background:#FCFBF9;}
   .day-group{margin-bottom:6px;}
   .day-group:not(:first-child){margin-top:8px;}
   .day-group-header{display:flex;align-items:baseline;gap:8px;padding:10px 4px 6px;font-size:14px;font-weight:700;color:var(--navy);border-bottom:2px solid var(--border);margin-bottom:2px;}
@@ -266,7 +271,8 @@
     </div>
 
     <form class="task-form" id="taskForm">
-      <input type="text" id="newTaskTitle" placeholder="Add a task for today…" required>
+      <input type="text" id="newTaskTitle" placeholder="Add a task…" required>
+      <input type="date" id="newTaskDate" title="Task date">
       <select id="newTaskCategory">
         <option value="content">Content</option>
         <option value="social">Social</option>
@@ -282,6 +288,7 @@
         <option value="medium" selected>Medium Priority</option>
         <option value="low">Low Priority</option>
       </select>
+      <select id="newTaskCoAssignee"><option value="">Solo task</option></select>
       <input type="url" id="newTaskLink" placeholder="Link (optional)" style="min-width:160px;">
       <button class="btn" type="submit">Add Task</button>
     </form>
@@ -597,12 +604,13 @@ async function loadTasks(){
   if (DEMO_MODE){ tasks = demoTasks; return; }
   tasks = await pgSelect('tasks', 'created_at.desc');
 }
-async function addTask(title, category, link, priority){
+async function addTask(title, category, link, priority, taskDate, coAssigneeId){
+  const date = taskDate || todayStr();
   if (DEMO_MODE){
-    demoTasks.unshift({ id:'t'+(idCounter++), employee_id:currentUser.id, title, category, link: link||null, admin_comment:null, priority: priority||'medium', task_date:todayStr(), status:'pending', completion_pct:0, quality_rating:null, created_at:new Date().toISOString() });
+    demoTasks.unshift({ id:'t'+(idCounter++), employee_id:currentUser.id, co_assignee_id: coAssigneeId||null, title, category, link: link||null, admin_comment:null, priority: priority||'medium', task_date:date, status:'pending', completion_pct:0, quality_rating:null, source:'manual', created_at:new Date().toISOString() });
     await refreshAll(); return;
   }
-  await pgInsert('tasks', { employee_id: currentUser.id, title, category, task_date: todayStr(), link: link||null, priority: priority||'medium' });
+  await pgInsert('tasks', { employee_id: currentUser.id, co_assignee_id: coAssigneeId||null, title, category, task_date: date, link: link||null, priority: priority||'medium' });
   await refreshAll();
 }
 async function updateTask(id, fields){
@@ -840,15 +848,46 @@ function switchTab(tab){
 }
 
 /* ====================== Render: My Tasks ====================== */
+let editingTaskId = null;
+function taskEditFormHtml(t){
+  const catOpts = ['content','social','ads','seo','client','design','strategy','other'];
+  const coOpts = employees.filter(e=>e.active && e.id!==t.employee_id).map(e=>`<option value="${e.id}" ${t.co_assignee_id===e.id?'selected':''}>${e.name}</option>`).join('');
+  return `
+    <div class="task-row edit-row">
+      <div class="task-edit-grid">
+        <input type="text" value="${escapeAttr(t.title)}" data-edit-title="${t.id}" placeholder="Title">
+        <input type="date" value="${t.task_date}" data-edit-date="${t.id}">
+        <select data-edit-category="${t.id}">
+          ${catOpts.map(c=>`<option value="${c}" ${t.category===c?'selected':''}>${c}</option>`).join('')}
+        </select>
+        <select data-edit-priority="${t.id}">
+          <option value="high" ${t.priority==='high'?'selected':''}>High</option>
+          <option value="medium" ${(t.priority||'medium')==='medium'?'selected':''}>Medium</option>
+          <option value="low" ${t.priority==='low'?'selected':''}>Low</option>
+        </select>
+        <select data-edit-coassignee="${t.id}"><option value="">Solo task</option>${coOpts}</select>
+        <input type="url" value="${escapeAttr(t.link||'')}" data-edit-link="${t.id}" placeholder="Link (optional)">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn small" data-save-edit="${t.id}">Save</button>
+        <button class="btn ghost small" data-cancel-edit="${t.id}">Cancel</button>
+      </div>
+    </div>`;
+}
 function taskRowHtml(t, showDate){
+  if (t.id === editingTaskId) return taskEditFormHtml(t);
   const priority = t.priority || 'medium';
   const stale = t.status !== 'completed' && workingDaysSince(t.task_date) > 3;
+  const coEmp = t.co_assignee_id ? employees.find(e=>e.id===t.co_assignee_id) : null;
+  const ownerEmp = t.employee_id !== (currentUser && currentUser.id) ? employees.find(e=>e.id===t.employee_id) : null;
   return `
     <div class="task-row priority-${priority} ${stale?'stale':''}">
       <div class="task-main">
         <div class="task-title ${t.status==='completed'?'done':''}">${escapeHtml(t.title)}</div>
         <span class="tag">${t.category}</span>
         ${showDate ? `<span style="margin-left:8px;font-size:11.5px;color:var(--muted);">${t.task_date}</span>` : ''}
+        ${ownerEmp ? `<span class="co-badge">👤 ${ownerEmp.name}'s task</span>` : ''}
+        ${coEmp ? `<span class="co-badge">🤝 with ${coEmp.name}</span>` : ''}
         ${stale ? `<span class="stale-badge">⚠ Stale · ${workingDaysSince(t.task_date)} working days</span>` : ''}
         ${t.source==='content_calendar' ? `<span class="auto-badge">⚙ Auto-logged from Content Calendar</span>` : ''}
         ${t.link ? `<a href="${escapeAttr(t.link)}" target="_blank" rel="noopener" style="margin-left:8px;font-size:12px;color:var(--navy);">🔗 View</a>` : ''}
@@ -863,6 +902,7 @@ function taskRowHtml(t, showDate){
         <input type="range" min="0" max="100" step="10" value="${t.completion_pct}" data-id="${t.id}" class="pctSlider">
         <span class="pct-label">${t.completion_pct}%</span>
         <span class="status-badge status-${t.status}">${t.status.replace('_',' ')}</span>
+        <button class="ci-del" data-edit-task="${t.id}" title="Edit task">✏️</button>
         <button class="ci-del" data-del-task="${t.id}" title="Delete task">✕</button>
       </div>
     </div>
@@ -886,6 +926,27 @@ function attachTaskRowHandlers(container){
       await updateTask(e.target.dataset.priority, { priority: e.target.value });
     });
   });
+  container.querySelectorAll('[data-edit-task]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ editingTaskId = btn.dataset.editTask; render(); });
+  });
+  container.querySelectorAll('[data-cancel-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ editingTaskId = null; render(); });
+  });
+  container.querySelectorAll('[data-save-edit]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id = btn.dataset.saveEdit;
+      const row = btn.closest('.edit-row');
+      const title = row.querySelector('[data-edit-title]').value.trim();
+      const taskDate = row.querySelector('[data-edit-date]').value;
+      const category = row.querySelector('[data-edit-category]').value;
+      const priority = row.querySelector('[data-edit-priority]').value;
+      const coAssigneeId = row.querySelector('[data-edit-coassignee]').value || null;
+      const link = row.querySelector('[data-edit-link]').value.trim() || null;
+      if (!title || !taskDate) return;
+      editingTaskId = null;
+      await updateTask(id, { title, task_date: taskDate, category, priority, co_assignee_id: coAssigneeId, link });
+    });
+  });
 }
 const PRIORITY_RANK = { high:0, medium:1, low:2 };
 function workingDaysSince(dateStr){
@@ -898,32 +959,50 @@ function workingDaysSince(dateStr){
   }
   return count;
 }
+function initTaskFormDefaults(){
+  const dateInput = document.getElementById('newTaskDate');
+  if (dateInput && !dateInput.value) dateInput.value = todayStr();
+  const coSel = document.getElementById('newTaskCoAssignee');
+  if (coSel){
+    const prevVal = coSel.value;
+    const opts = employees.filter(e=>e.active && e.id!==currentUser.id).map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+    coSel.innerHTML = `<option value="">Solo task</option>${opts}`;
+    coSel.value = prevVal;
+  }
+}
 function renderTasks(){
   document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
   if (!currentUser) return;
   renderTemplates();
+  initTaskFormDefaults();
 
   const HISTORY_DAYS = 14;
   const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - HISTORY_DAYS);
   const cutoffStr = fmtDate(cutoff);
 
-  const myTasks = tasks.filter(t => t.employee_id === currentUser.id);
+  const myTasks = tasksForEmployee(currentUser.id);
   const byDate = {};
   myTasks.forEach(t => { (byDate[t.task_date] = byDate[t.task_date] || []).push(t); });
 
   let dates = Object.keys(byDate).filter(d => d >= cutoffStr || byDate[d].some(t => t.status !== 'completed'));
   if (!dates.includes(todayStr())) dates.push(todayStr());
-  dates.sort((a,b) => a < b ? 1 : -1); // descending, today first
+  dates.sort((a,b) => a < b ? 1 : -1); // descending, upcoming/today first, then past
 
   const list = document.getElementById('taskList');
   list.innerHTML = dates.map(ds => {
     const dayTasks = (byDate[ds] || []).sort((a,b) => (PRIORITY_RANK[a.priority||'medium']) - (PRIORITY_RANK[b.priority||'medium']));
     const isToday = ds === todayStr();
-    const label = isToday ? 'Today' : new Date(ds).toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short' });
+    const diffDays = Math.round((new Date(ds) - new Date(todayStr())) / 86400000);
+    let label;
+    if (isToday) label = 'Today';
+    else if (diffDays === 1) label = 'Tomorrow';
+    else label = new Date(ds).toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short' }) + (diffDays > 1 ? ' (Upcoming)' : '');
     const pendingCount = dayTasks.filter(t => t.status !== 'completed').length;
+    const badge = diffDays < 0 && pendingCount ? `<span class="stale-badge">${pendingCount} pending</span>`
+      : diffDays > 0 && dayTasks.length ? `<span class="auto-badge">${dayTasks.length} scheduled</span>` : '';
     return `
     <div class="day-group">
-      <div class="day-group-header ${isToday?'today':''}">${label} <span class="dg-date">${ds}</span>${!isToday && pendingCount ? `<span class="stale-badge">${pendingCount} pending</span>` : ''}</div>
+      <div class="day-group-header ${isToday?'today':''}">${label} <span class="dg-date">${ds}</span>${badge}</div>
       ${dayTasks.length ? dayTasks.map(t=>taskRowHtml(t, false)).join('') : `<div class="empty" style="padding:8px 4px;">${isToday?'No tasks added yet today — add your first one above.':'No tasks that day.'}</div>`}
     </div>`;
   }).join('');
@@ -968,10 +1047,14 @@ document.getElementById('taskForm').addEventListener('submit', async (e)=>{
   const category = document.getElementById('newTaskCategory').value;
   const priority = document.getElementById('newTaskPriority').value;
   const link = document.getElementById('newTaskLink').value.trim();
+  const taskDate = document.getElementById('newTaskDate').value || todayStr();
+  const coAssigneeId = document.getElementById('newTaskCoAssignee').value;
   if (!title || !currentUser) return;
-  await addTask(title, category, link, priority);
+  await addTask(title, category, link, priority, taskDate, coAssigneeId);
   document.getElementById('newTaskTitle').value = '';
   document.getElementById('newTaskLink').value = '';
+  document.getElementById('newTaskDate').value = todayStr();
+  document.getElementById('newTaskCoAssignee').value = '';
 });
 
 /* ====================== Render: Attendance & Leave ====================== */
@@ -1320,13 +1403,16 @@ function effectiveTarget(empId, periodType, defaultTarget, periodStartStr){
 }
 
 /* ====================== Render: Dashboard ====================== */
+function tasksForEmployee(empId){
+  return tasks.filter(t => t.employee_id===empId || t.co_assignee_id===empId);
+}
 function deliverableCompletedCount(emp, sinceDate, untilDate){
   const scope = emp.target_scope || 'all';
   const inRange = (d) => { const dt = new Date(d); return dt >= sinceDate && (!untilDate || dt < untilDate); };
   if (scope === 'posts_published'){
     return contentStages.filter(s => s.stage_name==='posting' && s.done && s.assignee_id===emp.id && s.done_at && inRange(s.done_at)).length;
   }
-  let relevant = tasks.filter(t => t.employee_id===emp.id && inRange(t.task_date) && t.status==='completed');
+  let relevant = tasksForEmployee(emp.id).filter(t => inRange(t.task_date) && t.status==='completed');
   if (scope.startsWith('cat:')) relevant = relevant.filter(t => t.category === scope.slice(4));
   return relevant.length;
 }
@@ -1343,13 +1429,13 @@ function prevWeekRange(){
   return { start: prevStart, end: thisStart };
 }
 function categoryBreakdown(empId, sinceDate){
-  const relevant = tasks.filter(t => t.employee_id === empId && new Date(t.task_date) >= sinceDate && t.status==='completed');
+  const relevant = tasksForEmployee(empId).filter(t => new Date(t.task_date) >= sinceDate && t.status==='completed');
   const counts = {};
   relevant.forEach(t => counts[t.category] = (counts[t.category]||0)+1);
   return Object.entries(counts).sort((a,b)=>b[1]-a[1]);
 }
 function qualityAvg(empId, sinceDate){
-  const rated = tasks.filter(t => t.employee_id === empId && new Date(t.task_date) >= sinceDate && t.quality_rating);
+  const rated = tasksForEmployee(empId).filter(t => new Date(t.task_date) >= sinceDate && t.quality_rating);
   if (!rated.length) return null;
   return (rated.reduce((s,t)=>s+t.quality_rating,0)/rated.length);
 }
@@ -1607,8 +1693,9 @@ function renderAdmin(){
   const recent = [...tasks].filter(t=>t.status!=='pending' || t.completion_pct>0).slice(0,25);
   reviewBody.innerHTML = recent.length ? recent.map(t=>{
     const emp = employees.find(e=>e.id===t.employee_id);
+    const coEmp = t.co_assignee_id ? employees.find(e=>e.id===t.co_assignee_id) : null;
     return `<tr>
-      <td>${emp?emp.name:'—'}</td>
+      <td>${emp?emp.name:'—'}${coEmp?` <span style="color:var(--muted);font-size:11px;">+ ${coEmp.name}</span>`:''}</td>
       <td>${escapeHtml(t.title)}</td>
       <td>${t.task_date}</td>
       <td><span class="status-badge status-${t.status}">${t.status.replace('_',' ')}</span></td>
